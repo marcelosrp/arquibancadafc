@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id             String   @id @default(uuid()) @db.Uuid
+  name           String
+  email          String   @unique
+  passwordHash   String
+  favoriteTeamId String   @db.Uuid
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  favoriteTeam Team                @relation(fields: [favoriteTeamId], references: [id], onDelete: Restrict)
+  resetTokens  PasswordResetToken[]
+}
+
+model Team {
+  id         String  @id @default(uuid()) @db.Uuid
+  externalId Int     @unique
+  name       String
+  logo       String?
+  country    String
+
+  users        User[]
+  competitions TeamCompetition[]
+}
+
+model Competition {
+  id         String  @id @default(uuid()) @db.Uuid
+  externalId Int     @unique
+  name       String
+  type       String?
+  country    String?
+
+  seasons Season[]
+}
+
+model Season {
+  id            String    @id @default(uuid()) @db.Uuid
+  competitionId String    @db.Uuid
+  year          Int
+  startDate     DateTime?
+  endDate       DateTime?
+
+  competition Competition       @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  teams       TeamCompetition[]
+
+  @@unique([competitionId, year])
+}
+
+model TeamCompetition {
+  id       String @id @default(uuid()) @db.Uuid
+  teamId   String @db.Uuid
+  seasonId String @db.Uuid
+
+  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  season Season @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, seasonId])
+}
+
+model ApiCache {
+  key       String   @id
+  payload   Json
+  fetchedAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([expiresAt])
+}
+
+model ApiUsage {
+  id           String   @id @default(uuid()) @db.Uuid
+  endpoint     String
+  status       Int
+  remainingDay Int?
+  createdAt    DateTime @default(now())
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model RateLimit {
+  key         String
+  windowStart DateTime
+  count       Int      @default(0)
+
+  @@id([key, windowStart])
+}
