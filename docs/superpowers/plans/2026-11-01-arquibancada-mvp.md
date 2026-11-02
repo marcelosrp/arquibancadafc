@@ -114,9 +114,9 @@
 - Consumes: `env`, `prisma` (para `ApiUsage`).
 - Produces: `apiGet<T>(path: string, params: Record<string, string | number>): Promise<T>` retorna o campo `response` da API; lança `ApiFootballError` com `kind: "rate_limited" | "timeout" | "unavailable" | "bad_response"`.
 
-- [ ] **Step 1: Testes falhos** (com `fetch` mockado): envia header `x-apisports-key` e monta a query; `429` lança `rate_limited` sem retry; `503` faz até 3 tentativas com backoff (usar timers falsos) e depois lança `unavailable`; sucesso após uma falha transitória retorna dados; timeout de 8 s lança `timeout`; corpo com `errors` não vazio (a API devolve HTTP 200 com erros, ex.: temporada fora do plano) lança `bad_response` com a mensagem; a chave nunca aparece na mensagem do erro; cada chamada grava `ApiUsage` com o header `x-ratelimit-requests-remaining`.
-- [ ] **Step 2:** Rodar; FAIL. **Step 3:** Implementar com `fetch` + `AbortController`; backoff exponencial 500 ms/1 s/2 s só para 5xx e erros de rede. **Step 4:** Rodar; PASS.
-- [ ] **Step 5:** Commit `feat: api-football client with retry and usage log`.
+- [x] **Step 1: Testes falhos** (com `fetch` mockado): envia header `x-apisports-key` e monta a query; `429` lança `rate_limited` sem retry; `503` faz até 3 tentativas com backoff (usar timers falsos) e depois lança `unavailable`; sucesso após uma falha transitória retorna dados; timeout de 8 s lança `timeout`; corpo com `errors` não vazio (a API devolve HTTP 200 com erros, ex.: temporada fora do plano) lança `bad_response` com a mensagem; a chave nunca aparece na mensagem do erro; cada chamada grava `ApiUsage` com o header `x-ratelimit-requests-remaining`.
+- [x] **Step 2:** Rodar; FAIL. **Step 3:** Implementar com `fetch` + `AbortController`; backoff exponencial 500 ms/1 s/2 s só para 5xx e erros de rede. **Step 4:** Rodar; PASS.
+- [x] **Step 5:** Commit `feat: api-football client with retry and usage log`.
 
 ---
 
