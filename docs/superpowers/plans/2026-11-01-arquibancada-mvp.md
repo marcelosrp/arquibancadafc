@@ -141,9 +141,9 @@
 
 - Produces: `hashPassword(plain: string): Promise<string>` (Argon2id), `verifyPassword(plain: string, hash: string): Promise<boolean>`; `registerUser(input: { name: string; email: string; password: string; favoriteTeamId: string }): Promise<{ id: string }>` lança `EmailTakenError`, `TeamNotFoundError`; `registerSchema` (Zod): nome 2–80, e-mail válido normalizado para minúsculas, senha ≥ 8 caracteres; `rateLimit(key: string, limit: number, windowSec: number): Promise<{ allowed: boolean }>`; `auth()` do Auth.js; `requireUser(): Promise<{ id: string }>` (redireciona/401 se sem sessão).
 
-- [ ] **Step 1: Testes falhos:** hash começa com `$argon2id$` e `verifyPassword` valida certo/errado; `registerUser` com `A@X.com` e depois `a@x.com` lança `EmailTakenError`; senha de 7 caracteres rejeitada por `registerSchema`; `favoriteTeamId` inexistente lança `TeamNotFoundError`; `passwordHash` salvo ≠ senha; `rateLimit("login:ip", 5, 60)` permite 5 e bloqueia a 6ª; POST `/api/auth/register` com payload inválido retorna `400` com erros Zod e com e-mail repetido retorna `409`.
-- [ ] **Step 2:** Rodar; FAIL. **Step 3:** Implementar. Credentials `authorize` aplica `rateLimit` por e-mail e IP. `middleware.ts` protege `/dashboard`, `/competicoes`, `/perfil`. Cookies seguros e `HttpOnly` (padrão do Auth.js; garantir `secure` em produção). **Step 4:** Rodar; PASS.
-- [ ] **Step 5:** Commit `feat: registration and credentials auth`.
+- [x] **Step 1: Testes falhos:** hash começa com `$argon2id$` e `verifyPassword` valida certo/errado; `registerUser` com `A@X.com` e depois `a@x.com` lança `EmailTakenError`; senha de 7 caracteres rejeitada por `registerSchema`; `favoriteTeamId` inexistente lança `TeamNotFoundError`; `passwordHash` salvo ≠ senha; `rateLimit("login:ip", 5, 60)` permite 5 e bloqueia a 6ª; POST `/api/auth/register` com payload inválido retorna `400` com erros Zod e com e-mail repetido retorna `409`.
+- [x] **Step 2:** Rodar; FAIL. **Step 3:** Implementar. Credentials `authorize` aplica `rateLimit` por e-mail e IP. `middleware.ts` protege `/dashboard`, `/competicoes`, `/perfil`. Cookies seguros e `HttpOnly` (padrão do Auth.js; garantir `secure` em produção). **Step 4:** Rodar; PASS.
+- [x] **Step 5:** Commit `feat: registration and credentials auth`.
 
 ---
 
