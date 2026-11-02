@@ -33,11 +33,34 @@ export function parseTeams(raw: unknown): TeamItem[] {
   return result.data;
 }
 
+/** API-Football returns some club names without diacritics; restore the proper Portuguese spelling. */
+export const TEAM_NAME_FIXES: Readonly<Record<string, string>> = {
+  "America Mineiro": "América Mineiro",
+  "America-RN": "América-RN",
+  "Atletico Goianiense": "Atlético Goianiense",
+  "Atletico Paranaense": "Atlético Paranaense",
+  "Atletico-MG": "Atlético-MG",
+  Avai: "Avaí",
+  Ceara: "Ceará",
+  Criciuma: "Criciúma",
+  Cuiaba: "Cuiabá",
+  Ferroviario: "Ferroviário",
+  Goias: "Goiás",
+  Gremio: "Grêmio",
+  "Nautico Recife": "Náutico Recife",
+  "Operario-PR": "Operário-PR",
+  "Sampaio Correa": "Sampaio Corrêa",
+  "Sao Jose": "São José",
+  "Sao Paulo": "São Paulo",
+  "Sao Raimundo": "São Raimundo",
+  Vitoria: "Vitória",
+};
+
 export function mapTeam(item: TeamItem): TeamDTO {
   const { team } = item;
   return {
     externalId: team.id,
-    name: team.name,
+    name: TEAM_NAME_FIXES[team.name] ?? team.name,
     logo: team.logo ? team.logo : null,
     country: team.country || "Brazil",
   };
