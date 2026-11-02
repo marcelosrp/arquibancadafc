@@ -44,3 +44,15 @@ curl -X POST -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/i
 ```
 
 Depois, `GET /api/teams?search=flam` consulta apenas o banco.
+
+## Autenticação
+
+Auth.js (Credentials, sessão JWT em cookie `HttpOnly`) + senhas com Argon2id. Mapeamento das rotas:
+
+| Contrato | Implementação |
+|---|---|
+| `POST /api/auth/register` | Route Handler próprio (`201`, `400` com erros Zod, `409` e-mail repetido, `429`) |
+| login | `signIn("credentials")` do Auth.js (`POST /api/auth/callback/credentials`) |
+| logout | `signOut()` do Auth.js (`POST /api/auth/signout`) |
+
+`/dashboard`, `/competicoes` e `/perfil` são protegidas por `src/proxy.ts` (no Next 16, o antigo `middleware.ts`). Login tem rate limit por e-mail (5 / 15 min) e por IP (20 / 15 min). Gere o `AUTH_SECRET` com `npx auth secret`.
