@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 type Team = { id: string; name: string; logo: string | null };
 type State = "idle" | "loading" | "done" | "error";
+
+const DEBOUNCE_MS = 300;
 
 export function TeamPicker({
   value,
@@ -17,31 +19,56 @@ export function TeamPicker({
   const [teams, setTeams] = useState<Team[]>([]);
   const [state, setState] = useState<State>("idle");
   const [selected, setSelected] = useState<Team | null>(null);
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const controller = useRef<AbortController | undefined>(undefined);
 
-  useEffect(() => {
-    const term = query.trim();
-    if (term.length < 2) return;
-    const controller = new AbortController();
-    const timer = setTimeout(async () => {
-      setState("loading");
-      try {
-        const res = await fetch(`/api/teams?search=${encodeURIComponent(term)}`, {
-          signal: controller.signal,
-        });
-        if (!res.ok) throw new Error(String(res.status));
-        const body = (await res.json()) as { teams: Team[] };
-        setTeams(body.teams);
-        setState("done");
-      } catch (error) {
-        if (error instanceof DOMException && error.name === "AbortError") return;
-        setState("error");
-      }
-    }, 300);
+  function cancelPending() {
+    clearTimeout(timer.current);
+    controller.current?.abort();
+  }
+
+  // Ref callback cleanup (React 19) cancels pending work on unmount, so no effect is needed.
+  const watchUnmount = useCallback((node: HTMLDivElement | null) => {
+    if (!node) return;
     return () => {
-      clearTimeout(timer);
-      controller.abort();
+      clearTimeout(timer.current);
+      controller.current?.abort();
     };
-  }, [query]);
+  }, []);
+
+  async function search(term: string) {
+    const ctrl = new AbortController();
+    controller.current = ctrl;
+    setState("loading");
+    try {
+      const res = await fetch(`/api/teams?search=${encodeURIComponent(term)}`, {
+        signal: ctrl.signal,
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      const body = (await res.json()) as { teams: Team[] };
+      setTeams(body.teams);
+      setState("done");
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") return;
+      setState("error");
+    }
+  }
+
+  // Fetching is driven by the input event itself: debounce + abort live in the handler.
+  function handleQueryChange(next: string) {
+    setQuery(next);
+    cancelPending();
+    if (value) {
+      setSelected(null);
+      onChange(null);
+    }
+    const term = next.trim();
+    if (term.length < 2) {
+      setState("idle");
+      return;
+    }
+    timer.current = setTimeout(() => void search(term), DEBOUNCE_MS);
+  }
 
   const tooShort = query.trim().length < 2;
 
@@ -51,7 +78,7 @@ export function TeamPicker({
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div ref={watchUnmount} className="flex flex-col gap-2">
       <label htmlFor="team-search" className="text-sm font-medium">
         Time do coração
       </label>
@@ -60,13 +87,7 @@ export function TeamPicker({
         type="search"
         autoComplete="off"
         value={query}
-        onChange={(e) => {
-          setQuery(e.target.value);
-          if (value) {
-            setSelected(null);
-            onChange(null);
-          }
-        }}
+        onChange={(e) => handleQueryChange(e.target.value)}
         placeholder="Busque pelo nome do clube"
         className="h-9 rounded-md border bg-transparent px-3 text-sm"
       />
