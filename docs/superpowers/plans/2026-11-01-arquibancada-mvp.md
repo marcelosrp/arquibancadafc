@@ -99,9 +99,9 @@
 **Interfaces:**
 - Produces: `resolveSeason(args: { override?: number; apiSeasons: { year: number; current: boolean }[] }): number`.
 
-- [ ] **Step 1: Teste falho:** com `override: 2024` retorna `2024` ignorando `apiSeasons`; sem override retorna o ano da temporada com `current: true` (ex.: `[{year:2025,current:false},{year:2026,current:true}]` → `2026`, mesmo que o ano civil seja outro); sem override e sem `current` retorna o maior ano; lista vazia sem override lança `Error("season_unavailable")`.
-- [ ] **Step 2:** Rodar; FAIL. **Step 3:** Implementar. **Step 4:** Rodar; PASS.
-- [ ] **Step 5:** Commit `feat: season resolution`.
+- [x] **Step 1: Teste falho:** com `override: 2024` retorna `2024` ignorando `apiSeasons`; sem override retorna o ano da temporada com `current: true` (ex.: `[{year:2025,current:false},{year:2026,current:true}]` → `2026`, mesmo que o ano civil seja outro); sem override e sem `current` retorna o maior ano; lista vazia sem override lança `Error("season_unavailable")`.
+- [x] **Step 2:** Rodar; FAIL. **Step 3:** Implementar. **Step 4:** Rodar; PASS.
+- [x] **Step 5:** Commit `feat: season resolution`.
 
 ---
 
