@@ -38,7 +38,7 @@ export const TEAM_NAME_FIXES: Readonly<Record<string, string>> = {
   "America Mineiro": "América Mineiro",
   "America-RN": "América-RN",
   "Atletico Goianiense": "Atlético Goianiense",
-  "Atletico Paranaense": "Atlético Paranaense",
+  "Atletico Paranaense": "Athletico Paranaense",
   "Atletico-MG": "Atlético-MG",
   Avai: "Avaí",
   Ceara: "Ceará",
