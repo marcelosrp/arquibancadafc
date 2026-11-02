@@ -64,12 +64,12 @@
 **Interfaces:**
 - Produces: `env` (objeto tipado e validado) exportado de `src/lib/env.ts`; `parseEnv(raw: Record<string, string | undefined>): Env`.
 
-- [ ] **Step 1:** Inicializar com `create-next-app` (TypeScript, Tailwind, App Router, `src/` dir, ESLint) no diretório atual preservando `.docs/` e `docs/`; rodar `npx shadcn@latest init`; instalar `zod vitest @vitest/coverage-v8`. Script `"test": "vitest run"`.
-- [ ] **Step 2: Teste falho** `tests/unit/env.test.ts`: `parseEnv({})` lança erro citando `DATABASE_URL`; `parseEnv(validRaw)` retorna `API_FOOTBALL_BASE_URL === "https://v3.football.api-sports.io"` quando omitida (default); `SEASON_OVERRIDE: "2024"` vira número `2024`; `SEASON_OVERRIDE: "abc"` lança.
-- [ ] **Step 3:** Rodar `npx vitest run tests/unit/env.test.ts`. Esperado: FAIL (módulo inexistente).
-- [ ] **Step 4:** Implementar `parseEnv` e `env = parseEnv(process.env)` em `src/lib/env.ts` com Zod (`z.coerce.number().int().optional()` para a temporada). Criar `.env.example` com todas as variáveis, sem valores reais.
-- [ ] **Step 5:** Rodar o teste. Esperado: PASS. Rodar `npm run build`. Esperado: sucesso.
-- [ ] **Step 6:** Commit `chore: scaffold next app with env validation`.
+- [x] **Step 1:** Inicializar com `create-next-app` (TypeScript, Tailwind, App Router, `src/` dir, ESLint) no diretório atual preservando `.docs/` e `docs/`; rodar `npx shadcn@latest init`; instalar `zod vitest @vitest/coverage-v8`. Script `"test": "vitest run"`.
+- [x] **Step 2: Teste falho** `tests/unit/env.test.ts`: `parseEnv({})` lança erro citando `DATABASE_URL`; `parseEnv(validRaw)` retorna `API_FOOTBALL_BASE_URL === "https://v3.football.api-sports.io"` quando omitida (default); `SEASON_OVERRIDE: "2024"` vira número `2024`; `SEASON_OVERRIDE: "abc"` lança.
+- [x] **Step 3:** Rodar `npx vitest run tests/unit/env.test.ts`. Esperado: FAIL (módulo inexistente).
+- [x] **Step 4:** Implementar `parseEnv` e `env = parseEnv(process.env)` em `src/lib/env.ts` com Zod (`z.coerce.number().int().optional()` para a temporada). Criar `.env.example` com todas as variáveis, sem valores reais.
+- [x] **Step 5:** Rodar o teste. Esperado: PASS. Rodar `npm run build`. Esperado: sucesso.
+- [x] **Step 6:** Commit `chore: scaffold next app with env validation`.
 
 ---
 
