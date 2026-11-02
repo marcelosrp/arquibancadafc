@@ -176,9 +176,9 @@
 - Consumes: `prisma`, `ApiFootballError`.
 - Produces: `TTL_SECONDS = { standings: 3 * 3600, topscorers: 6 * 3600, topassists: 6 * 3600, fixtures: 6 * 3600, leagues: 24 * 3600 }` (relaxado frente ao brainstorm por causa do plano gratuito); `getOrFetch<T>(key: string, ttlSeconds: number, fetcher: () => Promise<T>): Promise<{ data: T; fetchedAt: Date; stale: boolean }>`; lança `ApiFootballError` se falhar sem dado salvo.
 
-- [ ] **Step 1: Testes falhos:** primeira chamada executa o fetcher e grava; segunda dentro do TTL não executa o fetcher; após expirar, executa de novo; se o fetcher lança `rate_limited` e há dado vencido, retorna o dado com `stale: true`; sem dado salvo, propaga o erro; duas chamadas concorrentes com a mesma chave executam o fetcher uma única vez (deduplicação em processo); chaves diferentes não se misturam.
-- [ ] **Step 2:** Rodar; FAIL. **Step 3:** Implementar. **Step 4:** Rodar; PASS.
-- [ ] **Step 5:** Commit `feat: ttl cache with stale fallback`.
+- [x] **Step 1: Testes falhos:** primeira chamada executa o fetcher e grava; segunda dentro do TTL não executa o fetcher; após expirar, executa de novo; se o fetcher lança `rate_limited` e há dado vencido, retorna o dado com `stale: true`; sem dado salvo, propaga o erro; duas chamadas concorrentes com a mesma chave executam o fetcher uma única vez (deduplicação em processo); chaves diferentes não se misturam.
+- [x] **Step 2:** Rodar; FAIL. **Step 3:** Implementar. **Step 4:** Rodar; PASS.
+- [x] **Step 5:** Commit `feat: ttl cache with stale fallback`.
 
 ---
 
