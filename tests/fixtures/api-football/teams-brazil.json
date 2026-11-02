@@ -1,0 +1,10 @@
+{
+  "errors": [],
+  "response": [
+    { "team": { "id": 127, "name": "Flamengo", "country": "Brazil", "national": false, "logo": "https://media.api-sports.io/football/teams/127.png" }, "venue": { "id": 1 } },
+    { "team": { "id": 126, "name": "São Paulo", "country": "Brazil", "national": false, "logo": "https://media.api-sports.io/football/teams/126.png" } },
+    { "team": { "id": 9999, "name": "Clube Sem Escudo", "country": "Brazil", "national": false } },
+    { "team": { "id": 127, "name": "Flamengo", "country": "Brazil", "national": false, "logo": "https://media.api-sports.io/football/teams/127.png" } },
+    { "team": { "id": 6, "name": "Brazil", "country": "Brazil", "national": true, "logo": "https://media.api-sports.io/football/teams/6.png" } }
+  ]
+}
