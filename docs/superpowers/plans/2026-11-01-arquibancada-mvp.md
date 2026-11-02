@@ -83,11 +83,11 @@
 - Produces: modelos Prisma — `User{id uuid, name, email @unique (minúsculo), passwordHash, favoriteTeamId, createdAt, updatedAt}`; `Team{id, externalId Int @unique, name, logo?, country}`; `Competition{id, externalId Int @unique, name, type?, country?}`; `Season{id, competitionId, year Int, startDate?, endDate?, @@unique([competitionId, year])}`; `TeamCompetition{id, teamId, seasonId, @@unique([teamId, seasonId])}`; `ApiCache{key @id, payload Json, fetchedAt, expiresAt}`; `ApiUsage{id, endpoint, status Int, remainingDay Int?, createdAt}`; `PasswordResetToken{id, userId, tokenHash @unique, expiresAt, usedAt?}`; `RateLimit{key, windowStart, count, @@id([key, windowStart])}`. Exporta `prisma` de `src/lib/prisma.ts`.
 - Decisão: sem tabelas `Player`/`Fixture`; artilharia, assistências, partidas e classificação ficam em `ApiCache` (evita duplicar dados da API sem finalidade).
 
-- [ ] **Step 1: Teste falho** `schema.test.ts`: criar `User` com e-mail duplicado lança violação de unicidade; `Season` duplicada (`competitionId`+`year`) lança; `Team` com mesmo `externalId` lança.
-- [ ] **Step 2:** `npx vitest run --project integration`. Esperado: FAIL.
-- [ ] **Step 3:** Escrever o schema, `docker compose up -d`, `npx prisma migrate dev --name init`. O setup de integração aplica `prisma migrate deploy` e trunca tabelas entre testes.
-- [ ] **Step 4:** Rodar o teste. Esperado: PASS.
-- [ ] **Step 5:** Commit `feat: prisma schema and migrations`.
+- [x] **Step 1: Teste falho** `schema.test.ts`: criar `User` com e-mail duplicado lança violação de unicidade; `Season` duplicada (`competitionId`+`year`) lança; `Team` com mesmo `externalId` lança.
+- [x] **Step 2:** `npx vitest run --project integration`. Esperado: FAIL.
+- [x] **Step 3:** Escrever o schema, `docker compose up -d`, `npx prisma migrate dev --name init`. O setup de integração aplica `prisma migrate deploy` e trunca tabelas entre testes.
+- [x] **Step 4:** Rodar o teste. Esperado: PASS.
+- [x] **Step 5:** Commit `feat: prisma schema and migrations`.
 
 ---
 
