@@ -4,7 +4,7 @@
 
 **Goal:** Entregar o MVP do Arquibancada: dashboard personalizado do clube favorito com competições, classificação, artilheiro, líder de assistências e próxima partida, alimentado pela API-Football com cache compartilhado.
 
-**Architecture:** Monólito Next.js (App Router). Páginas são Server Components que chamam serviços em `src/modules/*`; Route Handlers em `src/app/api/*` expõem os contratos REST. Toda chamada externa passa por `src/server/api-football/client.ts` e por uma camada de cache em PostgreSQL (`ApiCache`) com TTL por tipo de dado e fallback para dado vencido. Módulos de domínio não importam React.
+**Architecture:** Monólito Next.js (App Router). Páginas são Server Components que chamam serviços em `src/modules/`*; Route Handlers em `src/app/api/*` expõem os contratos REST. Toda chamada externa passa por `src/server/api-football/client.ts` e por uma camada de cache em PostgreSQL (`ApiCache`) com TTL por tipo de dado e fallback para dado vencido. Módulos de domínio não importam React.
 
 **Tech Stack:** Next.js (App Router), TypeScript, Tailwind CSS, shadcn/ui, PostgreSQL, Prisma, Zod, Auth.js (`next-auth@beta`, Credentials, JWT), `@node-rs/argon2`, Resend, Vitest, Playwright.
 
@@ -59,9 +59,11 @@
 ### Task 1: Fundação do projeto
 
 **Files:**
+
 - Create: projeto Next.js na raiz (`package.json`, `tsconfig.json`, `src/app/layout.tsx`, `src/app/page.tsx`), `src/lib/env.ts`, `.env.example`, `vitest.config.ts`, `tests/unit/env.test.ts`
 
 **Interfaces:**
+
 - Produces: `env` (objeto tipado e validado) exportado de `src/lib/env.ts`; `parseEnv(raw: Record<string, string | undefined>): Env`.
 
 - [x] **Step 1:** Inicializar com `create-next-app` (TypeScript, Tailwind, App Router, `src/` dir, ESLint) no diretório atual preservando `.docs/` e `docs/`; rodar `npx shadcn@latest init`; instalar `zod vitest @vitest/coverage-v8`. Script `"test": "vitest run"`.
@@ -76,10 +78,12 @@
 ### Task 2: Banco e schema Prisma
 
 **Files:**
+
 - Create: `prisma/schema.prisma`, `src/lib/prisma.ts`, `docker-compose.yml` (Postgres local), `tests/integration/setup.ts`, `tests/integration/schema.test.ts`
 - Modify: `vitest.config.ts` (projeto `integration` com `DATABASE_URL` de teste)
 
 **Interfaces:**
+
 - Produces: modelos Prisma — `User{id uuid, name, email @unique (minúsculo), passwordHash, favoriteTeamId, createdAt, updatedAt}`; `Team{id, externalId Int @unique, name, logo?, country}`; `Competition{id, externalId Int @unique, name, type?, country?}`; `Season{id, competitionId, year Int, startDate?, endDate?, @@unique([competitionId, year])}`; `TeamCompetition{id, teamId, seasonId, @@unique([teamId, seasonId])}`; `ApiCache{key @id, payload Json, fetchedAt, expiresAt}`; `ApiUsage{id, endpoint, status Int, remainingDay Int?, createdAt}`; `PasswordResetToken{id, userId, tokenHash @unique, expiresAt, usedAt?}`; `RateLimit{key, windowStart, count, @@id([key, windowStart])}`. Exporta `prisma` de `src/lib/prisma.ts`.
 - Decisão: sem tabelas `Player`/`Fixture`; artilharia, assistências, partidas e classificação ficam em `ApiCache` (evita duplicar dados da API sem finalidade).
 
@@ -94,29 +98,33 @@
 ### Task 3: Seleção de temporada
 
 **Files:**
+
 - Create: `src/lib/season.ts`, `tests/unit/season.test.ts`
 
 **Interfaces:**
+
 - Produces: `resolveSeason(args: { override?: number; apiSeasons: { year: number; current: boolean }[] }): number`.
 
-- [ ] **Step 1: Teste falho:** com `override: 2024` retorna `2024` ignorando `apiSeasons`; sem override retorna o ano da temporada com `current: true` (ex.: `[{year:2025,current:false},{year:2026,current:true}]` → `2026`, mesmo que o ano civil seja outro); sem override e sem `current` retorna o maior ano; lista vazia sem override lança `Error("season_unavailable")`.
-- [ ] **Step 2:** Rodar; FAIL. **Step 3:** Implementar. **Step 4:** Rodar; PASS.
-- [ ] **Step 5:** Commit `feat: season resolution`.
+- [x] **Step 1: Teste falho:** com `override: 2024` retorna `2024` ignorando `apiSeasons`; sem override retorna o ano da temporada com `current: true` (ex.: `[{year:2025,current:false},{year:2026,current:true}]` → `2026`, mesmo que o ano civil seja outro); sem override e sem `current` retorna o maior ano; lista vazia sem override lança `Error("season_unavailable")`.
+- [x] **Step 2:** Rodar; FAIL. **Step 3:** Implementar. **Step 4:** Rodar; PASS.
+- [x] **Step 5:** Commit `feat: season resolution`.
 
 ---
 
 ### Task 4: Cliente API-Football
 
 **Files:**
+
 - Create: `src/server/api-football/client.ts`, `tests/unit/api-client.test.ts`
 
 **Interfaces:**
+
 - Consumes: `env`, `prisma` (para `ApiUsage`).
 - Produces: `apiGet<T>(path: string, params: Record<string, string | number>): Promise<T>` retorna o campo `response` da API; lança `ApiFootballError` com `kind: "rate_limited" | "timeout" | "unavailable" | "bad_response"`.
 
-- [ ] **Step 1: Testes falhos** (com `fetch` mockado): envia header `x-apisports-key` e monta a query; `429` lança `rate_limited` sem retry; `503` faz até 3 tentativas com backoff (usar timers falsos) e depois lança `unavailable`; sucesso após uma falha transitória retorna dados; timeout de 8 s lança `timeout`; corpo com `errors` não vazio (a API devolve HTTP 200 com erros, ex.: temporada fora do plano) lança `bad_response` com a mensagem; a chave nunca aparece na mensagem do erro; cada chamada grava `ApiUsage` com o header `x-ratelimit-requests-remaining`.
-- [ ] **Step 2:** Rodar; FAIL. **Step 3:** Implementar com `fetch` + `AbortController`; backoff exponencial 500 ms/1 s/2 s só para 5xx e erros de rede. **Step 4:** Rodar; PASS.
-- [ ] **Step 5:** Commit `feat: api-football client with retry and usage log`.
+- [x] **Step 1: Testes falhos** (com `fetch` mockado): envia header `x-apisports-key` e monta a query; `429` lança `rate_limited` sem retry; `503` faz até 3 tentativas com backoff (usar timers falsos) e depois lança `unavailable`; sucesso após uma falha transitória retorna dados; timeout de 8 s lança `timeout`; corpo com `errors` não vazio (a API devolve HTTP 200 com erros, ex.: temporada fora do plano) lança `bad_response` com a mensagem; a chave nunca aparece na mensagem do erro; cada chamada grava `ApiUsage` com o header `x-ratelimit-requests-remaining`.
+- [x] **Step 2:** Rodar; FAIL. **Step 3:** Implementar com `fetch` + `AbortController`; backoff exponencial 500 ms/1 s/2 s só para 5xx e erros de rede. **Step 4:** Rodar; PASS.
+- [x] **Step 5:** Commit `feat: api-football client with retry and usage log`.
 
 ---
 
@@ -125,10 +133,12 @@
 > Ordem: este task depende de Task 6 (clubes) para o campo de time no formulário. Backend de registro recebe `favoriteTeamId` já como UUID interno; a UI de seleção chega na Task 6.
 
 **Files:**
+
 - Create: `src/modules/auth/{password.ts,register.ts,schemas.ts}`, `src/lib/auth.ts`, `src/server/rate-limit.ts`, `src/app/api/auth/register/route.ts`, `src/app/api/auth/[...nextauth]/route.ts`, `src/middleware.ts`, `tests/unit/password.test.ts`, `tests/integration/register.test.ts`, `tests/integration/rate-limit.test.ts`
 - Rotas `POST /api/auth/login` e `/logout` são atendidas pelo Auth.js (`signIn`/`signOut`); documentar o mapeamento no README.
 
 **Interfaces:**
+
 - Produces: `hashPassword(plain: string): Promise<string>` (Argon2id), `verifyPassword(plain: string, hash: string): Promise<boolean>`; `registerUser(input: { name: string; email: string; password: string; favoriteTeamId: string }): Promise<{ id: string }>` lança `EmailTakenError`, `TeamNotFoundError`; `registerSchema` (Zod): nome 2–80, e-mail válido normalizado para minúsculas, senha ≥ 8 caracteres; `rateLimit(key: string, limit: number, windowSec: number): Promise<{ allowed: boolean }>`; `auth()` do Auth.js; `requireUser(): Promise<{ id: string }>` (redireciona/401 se sem sessão).
 
 - [ ] **Step 1: Testes falhos:** hash começa com `$argon2id$` e `verifyPassword` valida certo/errado; `registerUser` com `A@X.com` e depois `a@x.com` lança `EmailTakenError`; senha de 7 caracteres rejeitada por `registerSchema`; `favoriteTeamId` inexistente lança `TeamNotFoundError`; `passwordHash` salvo ≠ senha; `rateLimit("login:ip", 5, 60)` permite 5 e bloqueia a 6ª; POST `/api/auth/register` com payload inválido retorna `400` com erros Zod e com e-mail repetido retorna `409`.
@@ -140,10 +150,12 @@
 ### Task 6: Clubes — sincronização e busca
 
 **Files:**
+
 - Create: `src/server/api-football/teams.ts`, `src/modules/teams/{sync.ts,search.ts}`, `src/app/api/teams/route.ts`, `tests/fixtures/api-football/teams-brazil.json`, `tests/unit/teams-mapper.test.ts`, `tests/integration/teams.test.ts`
 - Create (UI): `src/components/teams/TeamPicker.tsx`, `src/app/(auth)/cadastro/page.tsx`, `src/app/(auth)/login/page.tsx`
 
 **Interfaces:**
+
 - Consumes: `apiGet`, `prisma`, `registerUser`.
 - Produces: `fetchBrazilianTeams(): Promise<TeamDTO[]>` com `TeamDTO = { externalId: number; name: string; logo: string | null; country: string }`; `syncTeams(): Promise<{ upserted: number }>` (upsert por `externalId`, usa `GET /teams?country=Brazil` com a lista de ligas brasileiras da temporada resolvida; aproveita as páginas de `/leagues` e `/teams?league=&season=` — verificar na documentação o filtro mais barato em chamadas); `searchTeams(q: string, limit = 10): Promise<TeamDTO & { id: string }[]>` consulta só o banco, `ILIKE`, mínimo 2 caracteres; `GET /api/teams?search=`.
 
@@ -156,9 +168,11 @@
 ### Task 7: Camada de cache
 
 **Files:**
+
 - Create: `src/server/cache/api-cache.ts`, `src/server/cache/ttl.ts`, `tests/integration/api-cache.test.ts`
 
 **Interfaces:**
+
 - Consumes: `prisma`, `ApiFootballError`.
 - Produces: `TTL_SECONDS = { standings: 3 * 3600, topscorers: 6 * 3600, topassists: 6 * 3600, fixtures: 6 * 3600, leagues: 24 * 3600 }` (relaxado frente ao brainstorm por causa do plano gratuito); `getOrFetch<T>(key: string, ttlSeconds: number, fetcher: () => Promise<T>): Promise<{ data: T; fetchedAt: Date; stale: boolean }>`; lança `ApiFootballError` se falhar sem dado salvo.
 
@@ -171,9 +185,11 @@
 ### Task 8: Competições, classificação, artilharia, assistências, partidas
 
 **Files:**
+
 - Create: `src/server/api-football/{leagues,standings,players,fixtures}.ts`, `src/modules/competitions/{service.ts,types.ts}`, `tests/fixtures/api-football/{leagues-team.json,standings-league.json,standings-cup-empty.json,topscorers.json,topassists-empty.json,fixtures-team.json}`, `tests/unit/competition-mappers.test.ts`, `tests/integration/competition-service.test.ts`
 
 **Interfaces:**
+
 - Consumes: `apiGet`, `getOrFetch`, `TTL_SECONDS`, `resolveSeason`, `prisma`.
 - Produces (todos em `service.ts`):
   - `Availability<T> = { status: "ok"; data: T; fetchedAt: Date; stale: boolean } | { status: "unavailable"; reason: "no_coverage" | "provider_error" }`
@@ -191,9 +207,11 @@
 ### Task 9: Dashboard (serviço, rota e página)
 
 **Files:**
+
 - Create: `src/modules/dashboard/service.ts`, `src/app/api/dashboard/route.ts`, `src/app/(dashboard)/dashboard/page.tsx`, `src/components/dashboard/{ClubHeader,CompetitionCard,NextMatch,Unavailable,LastUpdated}.tsx`, `tests/integration/dashboard.test.ts`
 
 **Interfaces:**
+
 - Consumes: `requireUser`, serviços da Task 8.
 - Produces: `getDashboard(userId: string): Promise<{ team: {name: string; logo: string | null}; season: number; competitions: { id: string; name: string; standing: Availability<...>; topScorer: Availability<ScorerDTO>; topAssist: Availability<ScorerDTO> }[]; nextMatch: Availability<FixtureDTO | null> }>`; `GET /api/dashboard` (`401` sem sessão).
 
@@ -206,9 +224,11 @@
 ### Task 10: Detalhe da competição e rotas REST
 
 **Files:**
+
 - Create: `src/app/api/competitions/[id]/{standings,top-scorers,top-assists}/route.ts`, `src/app/api/teams/[teamId]/{competitions,fixtures}/route.ts`, `src/app/(dashboard)/competicoes/[id]/page.tsx`, `src/components/competitions/{StandingsTable,StagesView,PlayerRanking,FixtureList}.tsx`, `tests/integration/competition-routes.test.ts`
 
 **Interfaces:**
+
 - Consumes: serviços da Task 8, `requireUser`.
 - Produces: rotas da seção 7 do brainstorm, todas com `401` sem sessão e `404` para ids inexistentes; resposta no formato `Availability`.
 
@@ -221,9 +241,11 @@
 ### Task 11: Atualização agendada
 
 **Files:**
+
 - Create: `src/modules/sync/refresh.ts`, `src/app/api/internal/refresh/route.ts`, `vercel.json`, `tests/integration/refresh.test.ts`
 
 **Interfaces:**
+
 - Consumes: serviços da Task 8, `getOrFetch`, `prisma`.
 - Produces: `refreshAll(budget: number): Promise<{ refreshed: number; skipped: number }>`: percorre competições dos clubes favoritados (deduplicadas por competição/temporada), prioriza chaves vencidas mais antigas e para ao atingir `budget` chamadas ou `rate_limited`; `POST /api/internal/refresh` exige `Authorization: Bearer ${CRON_SECRET}`.
 
@@ -236,11 +258,13 @@
 ### Task 12: Perfil e recuperação de senha
 
 **Files:**
+
 - Create: `src/modules/users/profile.ts`, `src/modules/auth/reset.ts`, `src/app/api/me/route.ts`, `src/app/api/auth/{forgot,reset}/route.ts`, `src/server/email.ts`, `src/app/(dashboard)/perfil/page.tsx`, `src/app/(auth)/{esqueci-senha,redefinir-senha}/page.tsx`, `tests/integration/profile.test.ts`, `tests/integration/reset.test.ts`
 
 **Interfaces:**
+
 - Consumes: `requireUser`, `hashPassword`, `verifyPassword`, `rateLimit`.
-- Produces: `GET /api/me` → `{ id, name, email, favoriteTeam }`; `PATCH /api/me` aceita `{ name?, currentPassword?, newPassword? }` e **ignora/rejeita (`400`)** `favoriteTeamId`; `requestPasswordReset(email: string): Promise<void>` (sempre resolve igual, exista ou não o e-mail; token aleatório de 32 bytes, guarda só o hash SHA-256, expira em 1 h); `resetPassword(token: string, newPassword: string): Promise<void>` lança `InvalidTokenError` se expirado, usado ou inexistente; `sendEmail(to, subject, text)` usa Resend, ou loga o link no console sem `RESEND_API_KEY`.
+- Produces: `GET /api/me` → `{ id, name, email, favoriteTeam }`; `PATCH /api/me` aceita `{ name?, currentPassword?, newPassword? }` e **ignora/rejeita (**`400`**)** `favoriteTeamId`; `requestPasswordReset(email: string): Promise<void>` (sempre resolve igual, exista ou não o e-mail; token aleatório de 32 bytes, guarda só o hash SHA-256, expira em 1 h); `resetPassword(token: string, newPassword: string): Promise<void>` lança `InvalidTokenError` se expirado, usado ou inexistente; `sendEmail(to, subject, text)` usa Resend, ou loga o link no console sem `RESEND_API_KEY`.
 
 - [ ] **Step 1: Testes falhos:** `PATCH` com `favoriteTeamId` → `400` e time inalterado; trocar senha exige `currentPassword` correta; um usuário não consegue ler/alterar outro; token só funciona uma vez; token expirado falha; `requestPasswordReset` com e-mail inexistente não revela a diferença (mesma resposta, sem e-mail enviado); rate limit em `/forgot`.
 - [ ] **Step 2:** Rodar; FAIL. **Step 3:** Implementar. **Step 4:** Rodar; PASS.
@@ -251,10 +275,12 @@
 ### Task 13: E2E
 
 **Files:**
+
 - Create: `playwright.config.ts`, `tests/e2e/{signup-dashboard.spec.ts,auth.spec.ts,competition.spec.ts,profile.spec.ts}`, `tests/e2e/mock-api-server.ts`
 - Modify: `.env.test` (`API_FOOTBALL_BASE_URL` apontando para o servidor mock local)
 
 **Interfaces:**
+
 - Consumes: todo o app.
 - Produces: servidor mock servindo as fixtures de `tests/fixtures/api-football/`.
 
@@ -267,6 +293,7 @@
 ### Task 14: Publicação e documentação
 
 **Files:**
+
 - Create/Modify: `README.md`, `.github/workflows/ci.yml` (lint, tipos, testes unit/integração com Postgres de serviço, build)
 
 - [ ] **Step 1:** README: setup local, variáveis, como obter a chave, mapeamento de rotas de auth, limites do plano gratuito, como trocar para o plano pago (remover `SEASON_OVERRIDE`, ajustar TTLs e `budget`).
