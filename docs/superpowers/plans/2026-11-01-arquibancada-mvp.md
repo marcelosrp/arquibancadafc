@@ -159,9 +159,9 @@
 - Consumes: `apiGet`, `prisma`, `registerUser`.
 - Produces: `fetchBrazilianTeams(): Promise<TeamDTO[]>` com `TeamDTO = { externalId: number; name: string; logo: string | null; country: string }`; `syncTeams(): Promise<{ upserted: number }>` (upsert por `externalId`, usa `GET /teams?country=Brazil` com a lista de ligas brasileiras da temporada resolvida; aproveita as páginas de `/leagues` e `/teams?league=&season=` — verificar na documentação o filtro mais barato em chamadas); `searchTeams(q: string, limit = 10): Promise<TeamDTO & { id: string }[]>` consulta só o banco, `ILIKE`, mínimo 2 caracteres; `GET /api/teams?search=`.
 
-- [ ] **Step 1: Testes falhos:** mapper converte a fixture para `TeamDTO` e `logo` ausente vira `null`; `syncTeams` duas vezes não duplica; `searchTeams("flam")` encontra "Flamengo" sem acento/caixa; `q` de 1 caractere retorna `[]`; `GET /api/teams?search=fla` retorna `200` e nunca chama `fetch` externo.
-- [ ] **Step 2:** Rodar; FAIL. **Step 3:** Implementar; UI do cadastro com busca por debounce (300 ms) contra `/api/teams`, mostrando escudo e nome, chamando `registerUser` e depois `signIn`. **Step 4:** Rodar; PASS.
-- [ ] **Step 5:** Commit `feat: team sync, search and signup flow`.
+- [x] **Step 1: Testes falhos:** mapper converte a fixture para `TeamDTO` e `logo` ausente vira `null`; `syncTeams` duas vezes não duplica; `searchTeams("flam")` encontra "Flamengo" sem acento/caixa; `q` de 1 caractere retorna `[]`; `GET /api/teams?search=fla` retorna `200` e nunca chama `fetch` externo.
+- [x] **Step 2:** Rodar; FAIL. **Step 3:** Implementar; UI do cadastro com busca por debounce (300 ms) contra `/api/teams`, mostrando escudo e nome, chamando `registerUser` e depois `signIn`. **Step 4:** Rodar; PASS. **Nota:** nesta entrega, `TeamPicker` e backend ficaram na Task 6; as páginas `/cadastro` e `/login` (e a chamada a `registerUser`/`signIn`) foram movidas para a Task 5. Sync via `POST /api/internal/sync-teams` (Bearer `CRON_SECRET`) nas ligas 71, 72, 75 e 76.
+- [x] **Step 5:** Commit `feat: team sync, search and signup flow`.
 
 ---
 
