@@ -1,0 +1,7 @@
+{
+  "errors": [],
+  "response": [
+    { "player": { "id": 1, "name": "G. Gómez", "photo": "https://media.api-sports.io/football/players/1.png" }, "statistics": [{ "team": { "name": "Flamengo" }, "goals": { "total": 15, "assists": 3 } }] },
+    { "player": { "id": 2, "name": "Sem Gols", "photo": null }, "statistics": [{ "team": { "name": "São Paulo" }, "goals": { "total": null, "assists": null } }] }
+  ]
+}

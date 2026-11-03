@@ -1,0 +1,9 @@
+{
+  "errors": [],
+  "response": [
+    { "league": { "id": 13, "name": "Libertadores", "season": 2024, "standings": [
+      [{ "rank": 1, "group": "Group A", "team": { "id": 127, "name": "Flamengo", "logo": null }, "points": 12, "goalsDiff": 8, "all": { "played": 6 } }],
+      [{ "rank": 1, "group": "Group B", "team": { "id": 126, "name": "São Paulo", "logo": null }, "points": 10, "goalsDiff": 4, "all": { "played": 6 } }]
+    ] } }
+  ]
+}

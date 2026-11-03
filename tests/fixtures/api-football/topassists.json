@@ -1,0 +1,6 @@
+{
+  "errors": [],
+  "response": [
+    { "player": { "id": 3, "name": "Arrascaeta", "photo": null }, "statistics": [{ "team": { "name": "Flamengo" }, "goals": { "total": 5, "assists": 11 } }] }
+  ]
+}

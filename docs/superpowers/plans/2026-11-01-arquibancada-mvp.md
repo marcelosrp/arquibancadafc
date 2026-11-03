@@ -198,9 +198,9 @@
   - `getTopScorers` e `getTopAssists(competitionId, season): Promise<Availability<{ playerExternalId: number; name: string; photo: string | null; team: string; value: number }[]>>`
   - `getTeamFixtures(teamId: string, season: number): Promise<Availability<{ past: FixtureDTO[]; upcoming: FixtureDTO[] }>>`, com `FixtureDTO = { externalId: number; date: string /* ISO UTC */; status: string; competition: string; home: { name: string; logo: string | null; score: number | null }; away: {...} }`
 
-- [ ] **Step 1: Testes falhos:** resposta vazia de `topassists` → `{status:"unavailable", reason:"no_coverage"}` (nunca lista com zero); `standings` de copa vazia ou com vários grupos → `format: "stages"` ou `unavailable`, nunca `table`; liga com um grupo → `format: "table"`; `fixtures` divide `past`/`upcoming` por `date` e `status`; erro de provedor sem cache → `unavailable/provider_error`; com cache vencido → `ok` e `stale: true`; datas permanecem ISO UTC.
-- [ ] **Step 2:** Rodar; FAIL. **Step 3:** Implementar mapeadores com schemas Zod (resposta desconhecida → `bad_response`). Competições do clube via `GET /leagues?team=&season=`. Partidas com `GET /fixtures?team=&season=` (uma chamada, dividida localmente; evita `next=5` mais chamadas). **Step 4:** Rodar; PASS.
-- [ ] **Step 5:** Commit `feat: competition data services`.
+- [x] **Step 1: Testes falhos:** resposta vazia de `topassists` → `{status:"unavailable", reason:"no_coverage"}` (nunca lista com zero); `standings` de copa vazia ou com vários grupos → `format: "stages"` ou `unavailable`, nunca `table`; liga com um grupo → `format: "table"`; `fixtures` divide `past`/`upcoming` por `date` e `status`; erro de provedor sem cache → `unavailable/provider_error`; com cache vencido → `ok` e `stale: true`; datas permanecem ISO UTC.
+- [x] **Step 2:** Rodar; FAIL. **Step 3:** Implementar mapeadores com schemas Zod (resposta desconhecida → `bad_response`). Competições do clube via `GET /leagues?team=&season=`. Partidas com `GET /fixtures?team=&season=` (uma chamada, dividida localmente; evita `next=5` mais chamadas). **Step 4:** Rodar; PASS.
+- [x] **Step 5:** Commit `feat: competition data services`.
 
 ---
 
