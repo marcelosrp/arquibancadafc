@@ -1,0 +1,7 @@
+{
+  "errors": [],
+  "response": [
+    { "league": { "id": 71, "name": "Serie A", "type": "League", "logo": "https://media.api-sports.io/football/leagues/71.png" }, "country": { "name": "Brazil" }, "seasons": [{ "year": 2024, "start": "2024-04-13", "end": "2024-12-08", "current": false }] },
+    { "league": { "id": 73, "name": "Copa Do Brasil", "type": "Cup", "logo": null }, "country": { "name": "Brazil" }, "seasons": [{ "year": 2024, "start": "2024-02-20", "end": "2024-11-06", "current": false }] }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "errors": [],
+  "response": [
+    { "league": { "id": 71, "name": "Serie A", "season": 2024, "standings": [[
+      { "rank": 1, "team": { "id": 127, "name": "Flamengo", "logo": "https://media.api-sports.io/football/teams/127.png" }, "points": 70, "goalsDiff": 30, "all": { "played": 38 } },
+      { "rank": 2, "team": { "id": 126, "name": "São Paulo", "logo": null }, "points": 65, "goalsDiff": 12, "all": { "played": 38 } }
+    ]] } }
+  ]
+}
