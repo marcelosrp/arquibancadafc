@@ -123,7 +123,7 @@ describe("refreshAll", () => {
     await seedClub(1);
     await refreshAll(60);
     apiGet.mockClear();
-    const result = await refreshAll(60);
+    const result = await refreshAll(60, { horizonSeconds: 0 });
     expect(apiGet).not.toHaveBeenCalled();
     expect(result).toEqual({ refreshed: 0, skipped: 4 });
   });
@@ -141,7 +141,48 @@ describe("refreshAll", () => {
       data: { expiresAt: past(5) },
     });
     apiGet.mockClear();
-    await refreshAll(1);
+    await refreshAll(1, { horizonSeconds: 0 });
     expect(apiGet.mock.calls[0][0]).toBe("/standings");
+  });
+});
+
+describe("refreshAll — review fixes", () => {
+  it("refreshes keys that would expire before the next cron run", async () => {
+    await seedClub(1);
+    await refreshAll(60);
+    await prisma.apiCache.update({
+      where: { key: "topscorers:71:2024" },
+      data: { expiresAt: new Date(Date.now() + 3600_000) },
+    });
+    apiGet.mockClear();
+    await refreshAll(60);
+    const paths = apiGet.mock.calls.map((c) => c[0]);
+    expect(paths).toContain("/players/topscorers");
+    expect(paths).not.toContain("/fixtures"); // still valid beyond the horizon (6h TTL)
+  });
+
+  it("keeps a reserve of the daily quota for on-demand reads", async () => {
+    await seedClub(1);
+    await prisma.apiUsage.create({ data: { endpoint: "/x", status: 200, remainingDay: 32 } });
+    await refreshAll(60);
+    expect(apiGet).toHaveBeenCalledTimes(2); // 32 remaining - 30 reserved
+  });
+
+  it("does nothing when the remaining quota is at or below the reserve", async () => {
+    await seedClub(1);
+    await prisma.apiUsage.create({ data: { endpoint: "/x", status: 200, remainingDay: 30 } });
+    await refreshAll(60);
+    expect(apiGet).not.toHaveBeenCalled();
+  });
+
+  it("ignores seasons other than the one in use", async () => {
+    await seedClub(1);
+    const team = await prisma.team.findFirstOrThrow();
+    const competition = await prisma.competition.findFirstOrThrow();
+    const old = await prisma.season.create({ data: { competitionId: competition.id, year: 2023 } });
+    await prisma.teamCompetition.create({ data: { teamId: team.id, seasonId: old.id } });
+    await refreshAll(60);
+    expect(apiGet).toHaveBeenCalledTimes(4);
+    expect(apiGet.mock.calls.every((c) => (c[1] as { season: number }).season === 2024)).toBe(true);
   });
 });
