@@ -10,10 +10,11 @@ async function load<T>(
   key: string,
   ttlSeconds: number,
   fetcher: () => Promise<T>,
+  force: boolean,
 ): Promise<Cached<T>> {
   const row = await prisma.apiCache.findUnique({ where: { key } });
   const now = new Date();
-  if (row && row.expiresAt > now) {
+  if (!force && row && row.expiresAt > now) {
     return { data: row.payload as T, fetchedAt: row.fetchedAt, stale: false };
   }
 
@@ -41,16 +42,18 @@ async function load<T>(
  * result. If the provider fails (ApiFootballError) and an expired copy exists,
  * that copy is served with `stale: true`. Expired rows are never deleted — they
  * are the fallback. The payload must be JSON-serializable (dates as ISO strings).
+ * `force` skips the freshness check (scheduled refresh of soon-to-expire keys).
  * Concurrent calls with the same key share one in-flight fetch (per process).
  */
 export function getOrFetch<T>(
   key: string,
   ttlSeconds: number,
   fetcher: () => Promise<T>,
+  { force = false }: { force?: boolean } = {},
 ): Promise<Cached<T>> {
   const existing = inflight.get(key);
   if (existing) return existing as Promise<Cached<T>>;
-  const promise = load(key, ttlSeconds, fetcher).finally(() => inflight.delete(key));
+  const promise = load(key, ttlSeconds, fetcher, force).finally(() => inflight.delete(key));
   inflight.set(key, promise);
   return promise;
 }

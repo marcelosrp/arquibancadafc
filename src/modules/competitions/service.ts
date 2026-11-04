@@ -8,6 +8,7 @@ import { fetchTopAssists, fetchTopScorers } from "@/server/api-football/players"
 import { fetchStandings } from "@/server/api-football/standings";
 import { getOrFetch } from "@/server/cache/api-cache";
 import { TTL_SECONDS } from "@/server/cache/ttl";
+import { cacheKeys } from "./cache-keys";
 import type {
   Availability,
   FixtureDTO,
@@ -129,7 +130,7 @@ export async function getStandings(
 ): Promise<Availability<Standings>> {
   const { externalId } = await requireCompetition(competitionId);
   return availability(
-    `standings:${externalId}:${season}`,
+    cacheKeys.standings(externalId, season),
     TTL_SECONDS.standings,
     // `null` is cached too, so competitions without standings don't burn quota.
     () => fetchStandings(externalId, season),
@@ -143,7 +144,7 @@ export async function getTopScorers(
 ): Promise<Availability<PlayerRankingEntry[]>> {
   const { externalId } = await requireCompetition(competitionId);
   return availability(
-    `topscorers:${externalId}:${season}`,
+    cacheKeys.topscorers(externalId, season),
     TTL_SECONDS.topscorers,
     () => fetchTopScorers(externalId, season),
     (data) => (data.length > 0 ? data : null),
@@ -156,7 +157,7 @@ export async function getTopAssists(
 ): Promise<Availability<PlayerRankingEntry[]>> {
   const { externalId } = await requireCompetition(competitionId);
   return availability(
-    `topassists:${externalId}:${season}`,
+    cacheKeys.topassists(externalId, season),
     TTL_SECONDS.topassists,
     () => fetchTopAssists(externalId, season),
     (data) => (data.length > 0 ? data : null),
@@ -185,7 +186,7 @@ export async function getTeamFixtures(
   const team = await requireTeam(teamId);
   // The full list is cached; the past/upcoming split happens at read time.
   return availability(
-    `fixtures:v2:${team.externalId}:${season}`,
+    cacheKeys.fixtures(team.externalId, season),
     TTL_SECONDS.fixtures,
     () => fetchTeamFixtures(team.externalId, season),
     (data) => splitFixtures(data),
