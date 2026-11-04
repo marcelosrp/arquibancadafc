@@ -20,6 +20,7 @@ export function LoginForm() {
       </label>
       {state.error && <p role="alert" className="text-sm text-destructive">{state.error}</p>}
       <Button type="submit" disabled={pending}>{pending ? "Entrando…" : "Entrar"}</Button>
+      <a href="/esqueci-senha" className="text-sm underline">Esqueci minha senha</a>
       <a href="/cadastro" className="text-sm underline">Criar conta</a>
     </form>
   );
