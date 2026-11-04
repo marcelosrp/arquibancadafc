@@ -185,9 +185,37 @@ export async function getTeamFixtures(
   const team = await requireTeam(teamId);
   // The full list is cached; the past/upcoming split happens at read time.
   return availability(
-    `fixtures:${team.externalId}:${season}`,
+    `fixtures:v2:${team.externalId}:${season}`,
     TTL_SECONDS.fixtures,
     () => fetchTeamFixtures(team.externalId, season),
     (data) => splitFixtures(data),
   );
+}
+
+/** Season to show for a competition: explicit request, then SEASON_OVERRIDE, then the latest stored one. */
+export async function resolveCompetitionSeason(
+  competitionId: string,
+  requested?: number,
+): Promise<number | null> {
+  if (requested !== undefined) return requested;
+  if (env.SEASON_OVERRIDE !== undefined) return env.SEASON_OVERRIDE;
+  const latest = await prisma.season.findFirst({
+    where: { competitionId },
+    orderBy: { year: "desc" },
+    select: { year: true },
+  });
+  return latest?.year ?? null;
+}
+
+export async function getCompetition(competitionId: string, requestedSeason?: number) {
+  const competition = await requireCompetition(competitionId);
+  const season = await resolveCompetitionSeason(competition.id, requestedSeason);
+  if (season === null) throw new CompetitionNotFoundError();
+  return {
+    id: competition.id,
+    externalId: competition.externalId,
+    name: competition.name,
+    type: competition.type ?? "League",
+    season,
+  };
 }

@@ -32,6 +32,7 @@ export type FixtureDTO = {
   date: string;
   status: string;
   competition: string;
+  competitionExternalId: number;
   home: FixtureSide;
   away: FixtureSide;
 };

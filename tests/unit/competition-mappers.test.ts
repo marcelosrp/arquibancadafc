@@ -70,6 +70,7 @@ describe("mapFixtures", () => {
       date: "2030-01-01T22:00:00.000Z",
       status: "NS",
       competition: "Serie A",
+      competitionExternalId: 71,
       home: { name: "Flamengo", logo: "l.png", score: null },
       away: { name: "São Paulo", logo: null, score: null },
     });
