@@ -1,8 +1,8 @@
 {
   "errors": [],
   "response": [
-    { "fixture": { "id": 10, "date": "2024-05-01T22:00:00+00:00", "status": { "short": "FT" } }, "league": { "name": "Serie A" }, "teams": { "home": { "name": "Flamengo", "logo": "l.png" }, "away": { "name": "São Paulo", "logo": null } }, "goals": { "home": 2, "away": 1 } },
-    { "fixture": { "id": 11, "date": "2024-06-01T22:00:00+00:00", "status": { "short": "FT" } }, "league": { "name": "Serie A" }, "teams": { "home": { "name": "São Paulo", "logo": null }, "away": { "name": "Flamengo", "logo": "l.png" } }, "goals": { "home": 0, "away": 0 } },
-    { "fixture": { "id": 12, "date": "2030-01-01T22:00:00+00:00", "status": { "short": "NS" } }, "league": { "name": "Serie A" }, "teams": { "home": { "name": "Flamengo", "logo": "l.png" }, "away": { "name": "São Paulo", "logo": null } }, "goals": { "home": null, "away": null } }
+    { "fixture": { "id": 10, "date": "2024-05-01T22:00:00+00:00", "status": { "short": "FT" } }, "league": { "id": 71, "name": "Serie A" }, "teams": { "home": { "name": "Flamengo", "logo": "l.png" }, "away": { "name": "São Paulo", "logo": null } }, "goals": { "home": 2, "away": 1 } },
+    { "fixture": { "id": 11, "date": "2024-06-01T22:00:00+00:00", "status": { "short": "FT" } }, "league": { "id": 71, "name": "Serie A" }, "teams": { "home": { "name": "São Paulo", "logo": null }, "away": { "name": "Flamengo", "logo": "l.png" } }, "goals": { "home": 0, "away": 0 } },
+    { "fixture": { "id": 12, "date": "2030-01-01T22:00:00+00:00", "status": { "short": "NS" } }, "league": { "id": 71, "name": "Serie A" }, "teams": { "home": { "name": "Flamengo", "logo": "l.png" }, "away": { "name": "São Paulo", "logo": null } }, "goals": { "home": null, "away": null } }
   ]
 }

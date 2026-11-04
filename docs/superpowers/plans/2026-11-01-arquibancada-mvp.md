@@ -232,9 +232,9 @@
 - Consumes: serviços da Task 8, `requireUser`.
 - Produces: rotas da seção 7 do brainstorm, todas com `401` sem sessão e `404` para ids inexistentes; resposta no formato `Availability`.
 
-- [ ] **Step 1: Testes falhos:** cada rota `401` sem sessão; `404` para UUID inexistente; `standings` de copa responde `format: "stages"`; página de copa renderiza `StagesView` e não `StandingsTable`.
-- [ ] **Step 2:** Rodar; FAIL. **Step 3:** Implementar. Lista de clubes participantes derivada da própria classificação quando disponível. **Step 4:** Rodar; PASS.
-- [ ] **Step 5:** Commit `feat: competition detail pages and rest routes`.
+- [x] **Step 1: Testes falhos:** cada rota `401` sem sessão; `404` para UUID inexistente; `standings` de copa responde `format: "stages"`; página de copa renderiza `StagesView` e não `StandingsTable`.
+- [x] **Step 2:** Rodar; FAIL. **Step 3:** Implementar. Lista de clubes participantes derivada da própria classificação quando disponível. **Step 4:** Rodar; PASS.
+- [x] **Step 5:** Commit `feat: competition detail pages and rest routes`.
 
 ---
 

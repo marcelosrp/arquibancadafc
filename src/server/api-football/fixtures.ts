@@ -10,7 +10,7 @@ const fixtureItemSchema = z.looseObject({
     date: z.string().refine((d) => !Number.isNaN(Date.parse(d))),
     status: z.looseObject({ short: z.string().nullish() }),
   }),
-  league: z.looseObject({ name: z.string() }),
+  league: z.looseObject({ id: z.number().int(), name: z.string() }),
   teams: z.looseObject({ home: sideSchema, away: sideSchema }),
   goals: z.looseObject({ home: z.number().nullish(), away: z.number().nullish() }),
 });
@@ -35,6 +35,7 @@ export function mapFixtures(items: FixtureItem[]): FixtureDTO[] {
     date: new Date(i.fixture.date).toISOString(),
     status: i.fixture.status.short ?? "",
     competition: i.league.name,
+    competitionExternalId: i.league.id,
     home: side(i.teams.home, i.goals.home),
     away: side(i.teams.away, i.goals.away),
   }));
