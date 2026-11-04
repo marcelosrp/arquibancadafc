@@ -18,11 +18,14 @@ async function DashboardContent() {
           logo={dashboard.team.logo}
           season={dashboard.season}
         />
-        <form action={logoutAction}>
-          <Button type="submit" variant="outline">
-            Sair
-          </Button>
-        </form>
+        <div className="flex items-center gap-2">
+          <a href="/perfil" className="text-sm underline">Perfil</a>
+          <form action={logoutAction}>
+            <Button type="submit" variant="outline">
+              Sair
+            </Button>
+          </form>
+        </div>
       </div>
       <NextMatch match={dashboard.nextMatch} />
       {dashboard.competitions.length === 0 ? (
