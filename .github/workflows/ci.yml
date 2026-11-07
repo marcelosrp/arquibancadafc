@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [develop, main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: arquibancada
+          POSTGRES_PASSWORD: arquibancada
+          POSTGRES_DB: arquibancada_test
+        # .env.test aponta para localhost:5433
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U arquibancada -d arquibancada_test"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      # Valores fictícios apenas para o build; nenhum segredo real.
+      DATABASE_URL: postgresql://arquibancada:arquibancada@localhost:5433/arquibancada_test
+      API_FOOTBALL_KEY: ci-placeholder
+      AUTH_SECRET: ci-placeholder-secret-ci-placeholder-secret
+      CRON_SECRET: ci-placeholder
+      SEASON_OVERRIDE: "2024"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run test:unit
+      - run: npm run test:integration
+      - run: npm run build
+      # após o build: os tipos globais do Next (LayoutProps) são gerados nele
+      - run: npx tsc --noEmit
