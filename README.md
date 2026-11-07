@@ -50,6 +50,12 @@ npm run test:e2e           # Playwright, com servidor mock da API-Football
 
 Todos os testes usam respostas mockadas (`tests/fixtures/api-football/`); nenhum consome a cota da API real.
 
+## Interface: tema, fontes e componentes
+
+- **Tema:** o seletor do cabeçalho oferece Claro, Escuro e Sistema. A escolha fica em `localStorage` (chave `arquibancada-theme`) e um script inline no `<head>` aplica a classe `dark` antes da primeira pintura, evitando flash. "Sistema" acompanha `prefers-color-scheme`. Os tokens de cor (claro "Placar claro", escuro "Estádio à noite") ficam em `src/app/globals.css`, como variáveis CSS em `:root` e `.dark`; ajuste as cores lá e mantenha o contraste AA (o teste `tests/e2e/a11y.spec.ts` roda o axe nos dois temas).
+- **Fontes:** Barlow Condensed (títulos, classe `font-heading`) e Inter (texto), carregadas com `next/font` em `src/app/layout.tsx`.
+- **Componentes shadcn:** adicione com `npx shadcn@latest add <nome>`; os arquivos vão para `src/components/ui/`. Evite `useEffect`: prefira handlers e ref callbacks.
+
 ## Rotas de autenticação
 
 O Auth.js atende login e logout; não há route handlers próprios para eles.
