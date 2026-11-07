@@ -34,3 +34,16 @@ export const themeInitScript = `(function(){
   apply();
   if (mql && mql.addEventListener) mql.addEventListener("change", apply);
 })();`;
+
+export function applyTheme(pref: ThemePreference): void {
+  try {
+    localStorage.setItem(THEME_STORAGE_KEY, pref);
+  } catch {
+    // storage indisponível: aplica só nesta sessão
+  }
+  const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  document.documentElement.classList.toggle(
+    "dark",
+    resolveTheme(pref, systemDark) === "dark",
+  );
+}

@@ -50,6 +50,7 @@
 
 @layer base {
   :root {
+    color-scheme: light;
     --background: oklch(0.972 0.007 110);
     --foreground: oklch(0.25 0.025 160);
     --card: oklch(1 0 0);
@@ -85,6 +86,7 @@
   }
 
   .dark {
+    color-scheme: dark;
     --background: oklch(0.18 0.015 160);
     --foreground: oklch(0.96 0.015 155);
     --card: oklch(0.235 0.03 160);

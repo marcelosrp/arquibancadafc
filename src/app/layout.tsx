@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Barlow_Condensed, Inter } from "next/font/google";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { themeInitScript } from "@/lib/theme";
 import "./globals.css";
 
@@ -29,7 +30,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {/* Temporário (Task 3 move para (auth)/layout.tsx) */}
+        <div className="fixed top-3 right-3 z-50">
+          <ThemeToggle />
+        </div>
+        {children}
+      </body>
     </html>
   );
 }
