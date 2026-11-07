@@ -24,12 +24,11 @@ async function ProfileContent() {
 
 export default function PerfilPage() {
   return (
-    <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 p-8">
+    <>
       <h1 className="text-2xl font-bold">Perfil</h1>
-      <a href="/dashboard" className="text-sm underline">Voltar ao dashboard</a>
       <Suspense fallback={<p>Carregando…</p>}>
         <ProfileContent />
       </Suspense>
-    </main>
+    </>
   );
 }
