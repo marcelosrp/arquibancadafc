@@ -284,9 +284,9 @@
 - Consumes: todo o app.
 - Produces: servidor mock servindo as fixtures de `tests/fixtures/api-football/`.
 
-- [ ] **Step 1: Specs:** cadastro com busca e seleção do clube → cai no dashboard com o clube correto e o ano de `SEASON_OVERRIDE`; login/logout; rota protegida redireciona para login; página da competição mostra tabela de liga, e uma copa mostra fases; perfil não oferece troca de time; competição sem assistências mostra "indisponível".
-- [ ] **Step 2:** `npx playwright test`. Esperado: FAIL antes do mock; **Step 3:** subir o mock e ajustar; **Step 4:** Esperado: PASS.
-- [ ] **Step 5:** Commit `test: e2e flows with mocked api`.
+- [x] **Step 1: Specs:** cadastro com busca e seleção do clube → cai no dashboard com o clube correto e o ano de `SEASON_OVERRIDE`; login/logout; rota protegida redireciona para login; página da competição mostra tabela de liga, e uma copa mostra fases; perfil não oferece troca de time; competição sem assistências mostra "indisponível".
+- [x] **Step 2:** `npx playwright test`. Esperado: FAIL antes do mock; **Step 3:** subir o mock e ajustar; **Step 4:** Esperado: PASS.
+- [x] **Step 5:** Commit `test: e2e flows with mocked api`.
 
 ---
 
