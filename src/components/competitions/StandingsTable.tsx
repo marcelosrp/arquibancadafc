@@ -27,8 +27,8 @@ const ZONE_BAR = {
   bottom: "shadow-[inset_3px_0_0_var(--destructive)]",
 } as const;
 const ZONE_LABEL = {
-  top: "Zona de classificação (G4)",
-  bottom: "Zona de rebaixamento (Z4)",
+  top: "entre os 4 primeiros",
+  bottom: "entre os 4 últimos",
 } as const;
 
 export function StandingsTable({
@@ -96,11 +96,11 @@ export function ZoneLegend() {
     <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
       <li className="flex items-center gap-1.5">
         <span aria-hidden className="size-2.5 rounded-sm bg-primary" />
-        Classificação (G4)
+        4 primeiros
       </li>
       <li className="flex items-center gap-1.5">
         <span aria-hidden className="size-2.5 rounded-sm bg-destructive" />
-        Rebaixamento (Z4)
+        4 últimos
       </li>
     </ul>
   );

@@ -1,4 +1,4 @@
-import { AuthCard } from "@/components/ui/auth-card";
+import { AuthCard } from "@/components/auth/AuthCard";
 import { SignUpForm } from "./SignUpForm";
 
 export default function CadastroPage() {

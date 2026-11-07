@@ -3,7 +3,7 @@ import { ThemeToggle } from "@/components/theme/ThemeToggle";
 export default function AuthLayout({ children }: LayoutProps<"/">) {
   return (
     <div className="grid min-h-dvh flex-1 lg:grid-cols-2">
-      <div className="fixed top-3 right-3 z-50">
+      <div className="fixed top-3 right-3 z-50 max-lg:text-primary-foreground">
         <ThemeToggle />
       </div>
       <aside className="flex flex-col justify-center gap-3 bg-primary px-6 py-10 text-primary-foreground lg:px-16 lg:py-0">

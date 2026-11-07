@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { AuthCard } from "@/components/ui/auth-card";
+import { AuthCard } from "@/components/auth/AuthCard";
 import { ResetForm } from "./ResetForm";
 
 async function ResetContent({ searchParams }: { searchParams: Promise<{ token?: string }> }) {

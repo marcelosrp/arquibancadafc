@@ -20,4 +20,12 @@ describe("TeamLogo", () => {
     expect(html).toContain("<img");
     expect(html).toContain('alt="Flamengo"');
   });
+
+  it("falls back to initials when the host is not allowed or the url is invalid", () => {
+    for (const src of ["https://evil.example.com/x.png", "not a url"]) {
+      const html = renderToStaticMarkup(<TeamLogo name="Flamengo" src={src} />);
+      expect(html).not.toContain("<img");
+      expect(html).toContain("FL");
+    }
+  });
 });

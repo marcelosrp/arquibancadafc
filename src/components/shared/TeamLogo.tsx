@@ -8,6 +8,16 @@ function initials(name: string): string {
   return letters.toUpperCase();
 }
 
+const ALLOWED_LOGO_HOST = "media.api-sports.io";
+
+function isAllowedLogo(src: string): boolean {
+  try {
+    return new URL(src).hostname === ALLOWED_LOGO_HOST;
+  } catch {
+    return false;
+  }
+}
+
 export function TeamLogo({
   name,
   src,
@@ -19,7 +29,7 @@ export function TeamLogo({
   size?: number;
   className?: string;
 }) {
-  if (src) {
+  if (src && isAllowedLogo(src)) {
     return (
       <Image
         src={src}
