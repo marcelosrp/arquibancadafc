@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-
-const inputClass = "h-9 rounded-md border bg-transparent px-3 text-sm";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export function ResetForm({ token }: { token: string }) {
   const [status, setStatus] = useState<"idle" | "pending" | "done" | "error">("idle");
@@ -32,21 +32,21 @@ export function ResetForm({ token }: { token: string }) {
 
   if (status === "done") {
     return (
-      <div role="status" className="flex max-w-sm flex-col gap-2 text-sm">
+      <div role="status" className="flex flex-col gap-2 text-sm">
         <p>Senha redefinida com sucesso.</p>
-        <a href="/login" className="underline">Entrar</a>
+        <a href="/login" className="font-medium text-primary underline underline-offset-4">Entrar</a>
       </div>
     );
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex w-full max-w-sm flex-col gap-4">
-      <label className="flex flex-col gap-1 text-sm font-medium">
-        Nova senha
-        <input name="newPassword" type="password" required minLength={8} autoComplete="new-password" className={inputClass} />
-      </label>
-      {status === "error" && <p role="alert" className="text-sm text-destructive">{message}</p>}
-      <Button type="submit" disabled={status === "pending"}>
+    <form onSubmit={onSubmit} className="flex w-full flex-col gap-4">
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="reset-password">Nova senha</Label>
+        <Input id="reset-password" name="newPassword" type="password" required minLength={8} autoComplete="new-password" className="h-10" />
+      </div>
+      {status === "error" && <p role="alert" aria-live="assertive" className="text-sm font-medium text-destructive">{message}</p>}
+      <Button type="submit" size="lg" disabled={status === "pending"}>
         {status === "pending" ? "Salvando…" : "Redefinir senha"}
       </Button>
     </form>

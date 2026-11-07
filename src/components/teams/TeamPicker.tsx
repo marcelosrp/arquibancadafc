@@ -1,6 +1,9 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import { TeamLogo } from "@/components/shared/TeamLogo";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
 type Team = { id: string; name: string; logo: string | null };
@@ -79,21 +82,19 @@ export function TeamPicker({
 
   return (
     <div ref={watchUnmount} className="flex flex-col gap-2">
-      <label htmlFor="team-search" className="text-sm font-medium">
-        Time do coração
-      </label>
-      <input
+      <Label htmlFor="team-search">Time do coração</Label>
+      <Input
         id="team-search"
         type="search"
         autoComplete="off"
         value={query}
         onChange={(e) => handleQueryChange(e.target.value)}
         placeholder="Busque pelo nome do clube"
-        className="h-9 rounded-md border bg-transparent px-3 text-sm"
+        className="h-10"
       />
       {value && selected && (
-        <p className="flex items-center gap-2 text-sm" aria-live="polite">
-          <TeamLogo team={selected} /> Selecionado: <strong>{selected.name}</strong>
+        <p className="flex items-center gap-2 text-sm font-medium text-primary" aria-live="polite">
+          <TeamLogo name={selected.name} src={selected.logo} /> Selecionado: <strong>{selected.name}</strong>
         </p>
       )}
       <div aria-live="polite" className="text-sm text-muted-foreground">
@@ -103,18 +104,18 @@ export function TeamPicker({
         {!tooShort && state === "done" && teams.length === 0 && "Nenhum clube encontrado"}
       </div>
       {!tooShort && state === "done" && teams.length > 0 && (
-        <ul role="listbox" className="flex flex-col rounded-md border">
+        <ul role="listbox" className="flex max-h-64 flex-col overflow-y-auto rounded-lg border bg-card">
           {teams.map((team) => (
             <li key={team.id} role="option" aria-selected={team.id === value}>
               <button
                 type="button"
                 onClick={() => pick(team)}
                 className={cn(
-                  "flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-muted",
-                  team.id === value && "bg-muted font-medium",
+                  "flex w-full items-center gap-2 px-3 py-2.5 text-left text-sm outline-none hover:bg-muted focus-visible:bg-muted focus-visible:ring-2 focus-visible:ring-ring",
+                  team.id === value && "bg-muted font-semibold",
                 )}
               >
-                <TeamLogo team={team} />
+                <TeamLogo name={team.name} src={team.logo} />
                 {team.name}
               </button>
             </li>
@@ -122,14 +123,5 @@ export function TeamPicker({
         </ul>
       )}
     </div>
-  );
-}
-
-function TeamLogo({ team }: { team: Team }) {
-  return team.logo ? (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={team.logo} alt={`Escudo do ${team.name}`} className="size-6 object-contain" />
-  ) : (
-    <span aria-hidden className="inline-block size-6 rounded-full bg-muted" />
   );
 }

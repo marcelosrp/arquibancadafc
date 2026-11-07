@@ -21,13 +21,13 @@ async function CompetitionContent({ params }: { params: Promise<{ id: string }> 
 
 export default function CompetitionPage({ params }: { params: Promise<{ id: string }> }) {
   return (
-    <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 p-8">
-      <Link href="/dashboard" className="text-sm underline">
+    <div className="flex min-w-0 flex-col gap-4">
+      <Link href="/dashboard" className="w-fit text-sm text-muted-foreground hover:text-primary hover:underline">
         Voltar ao dashboard
       </Link>
       <Suspense fallback={<p>Carregando…</p>}>
         <CompetitionContent params={params} />
       </Suspense>
-    </main>
+    </div>
   );
 }

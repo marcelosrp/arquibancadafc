@@ -1,13 +1,18 @@
 import Link from "next/link";
 import type { DashboardCompetition } from "@/modules/dashboard/service";
 import type { Availability, PlayerRankingEntry } from "@/modules/competitions/service";
+import { TeamLogo } from "@/components/shared/TeamLogo";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { LastUpdated } from "./LastUpdated";
 import { Unavailable } from "./Unavailable";
 
 function Leader({ title, leader }: { title: string; leader: Availability<PlayerRankingEntry> }) {
   return (
-    <div>
-      <h3 className="text-sm font-medium">{title}</h3>
+    <div className="flex flex-col gap-1">
+      <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        {title}
+      </h3>
       {leader.status === "ok" ? (
         <p className="text-sm">
           {leader.data.name} ({leader.data.team}) · {leader.data.value}
@@ -31,7 +36,7 @@ function StandingSummary({ standing }: { standing: DashboardCompetition["standin
   }
   const top = standing.data.rows.slice(0, 5);
   return (
-    <ol className="text-sm">
+    <ol className="flex flex-col gap-1 text-sm tabular-nums">
       {top.map((row) => (
         <li key={row.teamExternalId}>
           {row.rank}. {row.teamName} · {row.points} pts
@@ -44,16 +49,25 @@ function StandingSummary({ standing }: { standing: DashboardCompetition["standin
 export function CompetitionCard({ competition }: { competition: DashboardCompetition }) {
   const { standing } = competition;
   return (
-    <article className="flex flex-col gap-3 rounded-lg border p-4">
-      <h2 className="font-semibold">
-        <Link href={`/competicoes/${competition.id}`}>{competition.name}</Link>
-      </h2>
-      <StandingSummary standing={standing} />
-      <Leader title="Artilheiro" leader={competition.topScorer} />
-      <Leader title="Líder de assistências" leader={competition.topAssist} />
-      {standing.status === "ok" && (
-        <LastUpdated fetchedAt={standing.fetchedAt} stale={standing.stale} />
-      )}
-    </article>
+    <Card className="min-w-0">
+      <CardHeader className="flex-row items-center gap-3">
+        {/* The API gives no competition logo, so the initials fallback is used. */}
+        <TeamLogo name={competition.name} src={null} size={40} />
+        <CardTitle className="min-w-0 truncate font-heading text-xl font-bold uppercase tracking-wide">
+          <Link href={`/competicoes/${competition.id}`} className="hover:text-primary hover:underline">
+            {competition.name}
+          </Link>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-3">
+        <StandingSummary standing={standing} />
+        <Separator />
+        <Leader title="Artilheiro" leader={competition.topScorer} />
+        <Leader title="Líder de assistências" leader={competition.topAssist} />
+        {standing.status === "ok" && (
+          <LastUpdated fetchedAt={standing.fetchedAt} stale={standing.stale} />
+        )}
+      </CardContent>
+    </Card>
   );
 }
