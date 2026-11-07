@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-
-const inputClass = "h-9 rounded-md border bg-transparent px-3 text-sm";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export function ForgotForm() {
   const [status, setStatus] = useState<"idle" | "pending" | "sent" | "error">("idle");
@@ -25,23 +25,23 @@ export function ForgotForm() {
 
   if (status === "sent") {
     return (
-      <p role="status" className="max-w-sm text-sm">
+      <p role="status" className="text-sm">
         Se o e-mail estiver cadastrado, enviaremos um link para redefinir a senha.
       </p>
     );
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex w-full max-w-sm flex-col gap-4">
-      <label className="flex flex-col gap-1 text-sm font-medium">
-        E-mail
-        <input name="email" type="email" required autoComplete="email" className={inputClass} />
-      </label>
-      {status === "error" && <p role="alert" className="text-sm text-destructive">{message}</p>}
-      <Button type="submit" disabled={status === "pending"}>
+    <form onSubmit={onSubmit} className="flex w-full flex-col gap-4">
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="forgot-email">E-mail</Label>
+        <Input id="forgot-email" name="email" type="email" required autoComplete="email" className="h-10" />
+      </div>
+      {status === "error" && <p role="alert" aria-live="assertive" className="text-sm font-medium text-destructive">{message}</p>}
+      <Button type="submit" size="lg" disabled={status === "pending"}>
         {status === "pending" ? "Enviando…" : "Enviar link"}
       </Button>
-      <a href="/login" className="text-sm underline">Voltar ao login</a>
+      <a href="/login" className="text-sm font-medium text-primary underline underline-offset-4">Voltar ao login</a>
     </form>
   );
 }

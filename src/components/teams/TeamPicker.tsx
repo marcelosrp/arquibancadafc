@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
 type Team = { id: string; name: string; logo: string | null };
@@ -79,20 +81,18 @@ export function TeamPicker({
 
   return (
     <div ref={watchUnmount} className="flex flex-col gap-2">
-      <label htmlFor="team-search" className="text-sm font-medium">
-        Time do coração
-      </label>
-      <input
+      <Label htmlFor="team-search">Time do coração</Label>
+      <Input
         id="team-search"
         type="search"
         autoComplete="off"
         value={query}
         onChange={(e) => handleQueryChange(e.target.value)}
         placeholder="Busque pelo nome do clube"
-        className="h-9 rounded-md border bg-transparent px-3 text-sm"
+        className="h-10"
       />
       {value && selected && (
-        <p className="flex items-center gap-2 text-sm" aria-live="polite">
+        <p className="flex items-center gap-2 text-sm font-medium text-primary" aria-live="polite">
           <TeamLogo team={selected} /> Selecionado: <strong>{selected.name}</strong>
         </p>
       )}
@@ -103,15 +103,15 @@ export function TeamPicker({
         {!tooShort && state === "done" && teams.length === 0 && "Nenhum clube encontrado"}
       </div>
       {!tooShort && state === "done" && teams.length > 0 && (
-        <ul role="listbox" className="flex flex-col rounded-md border">
+        <ul role="listbox" className="flex max-h-64 flex-col overflow-y-auto rounded-lg border bg-card">
           {teams.map((team) => (
             <li key={team.id} role="option" aria-selected={team.id === value}>
               <button
                 type="button"
                 onClick={() => pick(team)}
                 className={cn(
-                  "flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-muted",
-                  team.id === value && "bg-muted font-medium",
+                  "flex w-full items-center gap-2 px-3 py-2.5 text-left text-sm outline-none hover:bg-muted focus-visible:bg-muted focus-visible:ring-2 focus-visible:ring-ring",
+                  team.id === value && "bg-muted font-semibold",
                 )}
               >
                 <TeamLogo team={team} />
