@@ -24,13 +24,14 @@ test.beforeAll(async ({ browser }) => {
 
 async function newPage(
   browser: Browser,
+  baseURL: string | undefined,
   opts: { theme: (typeof THEMES)[number]; width: number; height: number; authed: boolean },
 ) {
   const ctx = await browser.newContext({
     viewport: { width: opts.width, height: opts.height },
     reducedMotion: "reduce",
     locale: "pt-BR",
-    baseURL: "http://localhost:3100",
+    baseURL,
     storageState: opts.authed ? storageState : undefined,
   });
   await ctx.addInitScript((theme) => {
@@ -42,20 +43,28 @@ async function newPage(
 }
 
 /**
- * Camadas decorativas (aria-hidden: listras do gramado, gradientes) impedem o axe de resolver o
- * fundo ("incomplete"); escondê-las deixa o axe medir contra o fundo real. São tintas de 6-7%.
+ * Camadas decorativas sem texto (aria-hidden: listras do gramado, gradientes) impedem o axe de
+ * resolver o fundo ("incomplete"); escondê-las deixa o axe medir contra o fundo real. Elementos
+ * aria-hidden COM texto (ex.: números dos passos) continuam sendo medidos.
  */
-const HIDE_DECORATION = '[aria-hidden="true"]:not(svg):not(svg *){visibility:hidden !important}';
+async function hideTextFreeDecoration(page: Page) {
+  await page.evaluate(() => {
+    for (const el of document.querySelectorAll<HTMLElement>('[aria-hidden="true"]')) {
+      if (el instanceof SVGElement || el.closest("svg")) continue;
+      if (!(el.textContent ?? "").trim()) el.style.visibility = "hidden";
+    }
+  });
+}
 
 async function runAxe(page: Page) {
-  return new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).withRules(["color-contrast"]).analyze();
+  return new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
 }
 
 async function audit(page: Page, path: string) {
   await page.goto(path);
   await page.waitForLoadState("networkidle");
   await page.evaluate(() => document.fonts.ready);
-  await page.addStyleTag({ content: HIDE_DECORATION });
+  await hideTextFreeDecoration(page);
   let results = await runAxe(page);
   // Primeira carga a frio às vezes deixa o axe sem resolver o fundo: mede de novo uma vez.
   if (results.incomplete.length > 0) {
@@ -73,18 +82,18 @@ async function audit(page: Page, path: string) {
 
 for (const theme of THEMES) {
   for (const vp of VIEWPORTS) {
-    test(`axe (contraste e WCAG A/AA): ${theme}, ${vp.name}`, async ({ browser }) => {
+    test(`axe (contraste e WCAG A/AA): ${theme}, ${vp.name}`, async ({ browser, baseURL }) => {
       test.setTimeout(120_000);
       const publicPaths = ["/", "/login", "/cadastro"];
       const authedPaths = ["/dashboard", competitionPath, "/perfil"];
       expect(competitionPath).toMatch(/^\/competicoes\//);
       const found: Record<string, unknown> = {};
 
-      const anon = await newPage(browser, { theme, ...vp, authed: false });
+      const anon = await newPage(browser, baseURL, { theme, ...vp, authed: false });
       for (const p of publicPaths) found[p] = await audit(anon.page, p);
       await anon.ctx.close();
 
-      const auth = await newPage(browser, { theme, ...vp, authed: true });
+      const auth = await newPage(browser, baseURL, { theme, ...vp, authed: true });
       for (const p of authedPaths) found[p] = await audit(auth.page, p);
       await auth.ctx.close();
 

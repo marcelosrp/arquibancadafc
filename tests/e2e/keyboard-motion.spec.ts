@@ -5,16 +5,25 @@ async function expectVisibleFocusRings(page: Page, minimum: number) {
   let withRing = 0;
   for (let i = 0; i < 12; i++) {
     await page.keyboard.press("Tab");
-    const ring = await page.evaluate(() => {
-      const el = document.activeElement as HTMLElement | null;
-      if (!el || el === document.body) return null;
-      const cs = getComputedStyle(el);
-      const outline = cs.outlineStyle !== "none" && parseFloat(cs.outlineWidth) > 0;
-      const shadow = cs.boxShadow !== "none" && cs.boxShadow !== "";
-      return { tag: el.tagName, outline, shadow };
-    });
-    if (!ring) continue;
-    expect(ring.outline || ring.shadow, `sem anel de foco em ${ring.tag}`).toBe(true);
+    const handle = await page.evaluateHandle(() =>
+      document.activeElement === document.body ? null : document.activeElement,
+    );
+    const el = handle.asElement();
+    if (!el) continue;
+    const snap = () =>
+      el.evaluate((node) => {
+        const cs = getComputedStyle(node);
+        return [cs.outlineStyle, cs.outlineWidth, cs.outlineColor, cs.boxShadow].join(" | ");
+      });
+    await page.waitForTimeout(150); // deixa a transição do anel terminar
+    const focused = await snap();
+    // O anel é a diferença entre focado e não focado (o estado base não conta).
+    await el.evaluate((node) => (node as HTMLElement).blur());
+    await page.waitForTimeout(150);
+    const baseline = await snap();
+    await el.evaluate((node) => (node as HTMLElement).focus());
+    const tag = await el.evaluate((node) => node.tagName);
+    expect(focused, `sem anel de foco em ${tag}`).not.toBe(baseline);
     withRing++;
   }
   expect(withRing).toBeGreaterThanOrEqual(minimum);
