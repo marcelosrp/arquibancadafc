@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import { TeamLogo } from "@/components/shared/TeamLogo";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -93,7 +94,7 @@ export function TeamPicker({
       />
       {value && selected && (
         <p className="flex items-center gap-2 text-sm font-medium text-primary" aria-live="polite">
-          <TeamLogo team={selected} /> Selecionado: <strong>{selected.name}</strong>
+          <TeamLogo name={selected.name} src={selected.logo} /> Selecionado: <strong>{selected.name}</strong>
         </p>
       )}
       <div aria-live="polite" className="text-sm text-muted-foreground">
@@ -114,7 +115,7 @@ export function TeamPicker({
                   team.id === value && "bg-muted font-semibold",
                 )}
               >
-                <TeamLogo team={team} />
+                <TeamLogo name={team.name} src={team.logo} />
                 {team.name}
               </button>
             </li>
@@ -122,14 +123,5 @@ export function TeamPicker({
         </ul>
       )}
     </div>
-  );
-}
-
-function TeamLogo({ team }: { team: Team }) {
-  return team.logo ? (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={team.logo} alt={`Escudo do ${team.name}`} className="size-6 object-contain" />
-  ) : (
-    <span aria-hidden className="inline-block size-6 rounded-full bg-muted" />
   );
 }

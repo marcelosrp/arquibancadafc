@@ -8,7 +8,11 @@ export function LastUpdated({ fetchedAt, stale }: { fetchedAt: Date; stale: bool
   return (
     <p className="text-xs text-muted-foreground">
       Atualizado em {formatter.format(fetchedAt)}
-      {stale && <span className="ml-2 font-medium text-amber-600">Dados desatualizados</span>}
+      {stale && (
+        <span className="ml-2 font-medium text-amber-700 dark:text-amber-300">
+          Dados desatualizados
+        </span>
+      )}
     </p>
   );
 }

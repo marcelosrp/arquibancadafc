@@ -1,3 +1,6 @@
+import { TeamLogo } from "@/components/shared/TeamLogo";
+import { Badge } from "@/components/ui/badge";
+
 export function ClubHeader({
   name,
   logo,
@@ -8,14 +11,13 @@ export function ClubHeader({
   season: number;
 }) {
   return (
-    <header className="flex items-center gap-4">
-      {logo && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={logo} alt={`Escudo do ${name}`} width={64} height={64} className="size-16" />
-      )}
-      <div>
-        <h1 className="text-2xl font-bold">{name}</h1>
-        <p className="text-sm text-muted-foreground">Temporada {season}</p>
+    <header className="flex min-w-0 items-center gap-4 rounded-xl border bg-card p-4 sm:gap-6 sm:p-6">
+      <TeamLogo name={name} src={logo} size={96} className="size-16 sm:size-24" />
+      <div className="flex min-w-0 flex-col items-start gap-2">
+        <h1 className="max-w-full truncate font-heading text-3xl font-bold uppercase tracking-wide sm:text-5xl">
+          {name}
+        </h1>
+        <Badge variant="secondary">Temporada {season}</Badge>
       </div>
     </header>
   );

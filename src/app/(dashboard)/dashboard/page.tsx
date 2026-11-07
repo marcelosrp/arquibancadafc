@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { ClubHeader } from "@/components/dashboard/ClubHeader";
 import { CompetitionCard } from "@/components/dashboard/CompetitionCard";
 import { NextMatch } from "@/components/dashboard/NextMatch";
+import { Skeleton } from "@/components/ui/skeleton";
 import { requireUser } from "@/lib/auth";
 import { getDashboard } from "@/modules/dashboard/service";
 
@@ -31,9 +32,22 @@ async function DashboardContent() {
   );
 }
 
+function DashboardSkeleton() {
+  return (
+    <div role="status" aria-label="Carregando painel" className="flex flex-col gap-6">
+      <Skeleton className="h-28 w-full rounded-xl sm:h-40" />
+      <Skeleton className="h-32 w-full rounded-xl" />
+      <div className="grid gap-4 md:grid-cols-2">
+        <Skeleton className="h-56 rounded-xl" />
+        <Skeleton className="h-56 rounded-xl" />
+      </div>
+    </div>
+  );
+}
+
 export default function DashboardPage() {
   return (
-    <Suspense fallback={<p>Carregando…</p>}>
+    <Suspense fallback={<DashboardSkeleton />}>
       <DashboardContent />
     </Suspense>
   );

@@ -10,8 +10,14 @@ const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
 
 export function NextMatch({ match }: { match: Availability<FixtureDTO | null> }) {
   return (
-    <section aria-labelledby="next-match" className="rounded-lg border p-4">
-      <h2 id="next-match" className="mb-2 font-semibold">
+    <section
+      aria-labelledby="next-match"
+      className="flex flex-col gap-3 rounded-xl border border-primary/30 bg-card p-4 sm:p-6"
+    >
+      <h2
+        id="next-match"
+        className="font-heading text-sm font-semibold uppercase tracking-widest text-primary"
+      >
         Próxima partida
       </h2>
       {match.status !== "ok" ? (
@@ -20,7 +26,7 @@ export function NextMatch({ match }: { match: Availability<FixtureDTO | null> })
         <p className="text-sm text-muted-foreground">Sem próxima partida</p>
       ) : (
         <>
-          <p>
+          <p className="font-heading text-2xl font-bold uppercase tabular-nums sm:text-4xl">
             {match.data.home.name} x {match.data.away.name}
           </p>
           <p className="text-sm text-muted-foreground">
