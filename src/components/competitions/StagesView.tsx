@@ -9,10 +9,12 @@ export function StagesView({
   highlightTeamExternalId?: number;
 }) {
   return (
-    <div data-testid="stages-view" className="flex flex-col gap-4">
+    <div data-testid="stages-view" className="flex flex-col gap-5">
       {stages.map((stage) => (
-        <section key={stage.name}>
-          <h3 className="mb-1 text-sm font-medium">{stage.name}</h3>
+        <section key={stage.name} className="flex flex-col gap-2">
+          <h3 className="font-heading text-lg font-semibold uppercase tracking-wide">
+            {stage.name}
+          </h3>
           <StandingsTable rows={stage.rows} highlightTeamExternalId={highlightTeamExternalId} />
         </section>
       ))}
