@@ -40,3 +40,11 @@ test.describe("seletor de tema", () => {
     await expect(page.locator("html")).not.toHaveClass(/dark/);
   });
 });
+
+test("o menu marca a escolha ativa", async ({ page }) => {
+  await page.goto("/login");
+  await choose(page, "Escuro");
+  await page.getByRole("button", { name: "Tema" }).click();
+  await expect(page.getByRole("menuitem", { name: "Escuro" })).toHaveAttribute("aria-current", "true");
+  await expect(page.getByRole("menuitem", { name: "Claro" })).not.toHaveAttribute("aria-current", "true");
+});

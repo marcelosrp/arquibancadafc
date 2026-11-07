@@ -1,6 +1,7 @@
 "use client";
 
-import { Monitor, Moon, Sun } from "lucide-react";
+import { Check, Monitor, Moon, Sun } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -8,7 +9,20 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { applyTheme, type ThemePreference } from "@/lib/theme";
+import {
+  THEME_STORAGE_KEY,
+  applyTheme,
+  parsePreference,
+  type ThemePreference,
+} from "@/lib/theme";
+
+function readPreference(): ThemePreference {
+  try {
+    return parsePreference(localStorage.getItem(THEME_STORAGE_KEY));
+  } catch {
+    return "system";
+  }
+}
 
 const OPTIONS: { value: ThemePreference; label: string; Icon: typeof Sun }[] = [
   { value: "light", label: "Claro", Icon: Sun },
@@ -17,8 +31,11 @@ const OPTIONS: { value: ThemePreference; label: string; Icon: typeof Sun }[] = [
 ];
 
 export function ThemeToggle() {
+  // Lido do localStorage só ao abrir o menu (sem efeito), para marcar a escolha ativa.
+  const [current, setCurrent] = useState<ThemePreference>("system");
+
   return (
-    <DropdownMenu>
+    <DropdownMenu onOpenChange={(open) => open && setCurrent(readPreference())}>
       <DropdownMenuTrigger
         render={<Button variant="ghost" size="icon" aria-label="Tema" />}
       >
@@ -27,9 +44,17 @@ export function ThemeToggle() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         {OPTIONS.map(({ value, label, Icon }) => (
-          <DropdownMenuItem key={value} onClick={() => applyTheme(value)}>
+          <DropdownMenuItem
+            key={value}
+            aria-current={current === value ? "true" : undefined}
+            onClick={() => {
+              applyTheme(value);
+              setCurrent(value);
+            }}
+          >
             <Icon aria-hidden />
             {label}
+            {current === value && <Check className="ml-auto" aria-hidden />}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

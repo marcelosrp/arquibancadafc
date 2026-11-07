@@ -15,10 +15,14 @@ test.describe("landing page", () => {
     await expect(header.getByRole("link", { name: "Criar conta", exact: true })).toHaveAttribute("href", "/cadastro");
 
     // Os CTAs da página toda apontam para os mesmos destinos.
-    for (const link of await page.getByRole("link", { name: /^Entrar/ }).all()) {
+    const entrar = page.getByRole("link", { name: /^Entrar/ });
+    const criar = page.getByRole("link", { name: /^Criar (minha )?conta/ });
+    expect(await entrar.count()).toBeGreaterThanOrEqual(1);
+    expect(await criar.count()).toBeGreaterThanOrEqual(1);
+    for (const link of await entrar.all()) {
       await expect(link).toHaveAttribute("href", "/login");
     }
-    for (const link of await page.getByRole("link", { name: /^Criar (minha )?conta/ }).all()) {
+    for (const link of await criar.all()) {
       await expect(link).toHaveAttribute("href", "/cadastro");
     }
   });

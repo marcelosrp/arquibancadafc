@@ -23,6 +23,7 @@ async function ProfileContent() {
               {profile.name}
             </p>
             <p className="truncate text-sm text-muted-foreground">
+              <span className="sr-only">E-mail: </span>
               {profile.email}
             </p>
           </div>
