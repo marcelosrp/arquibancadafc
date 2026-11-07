@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-
-const inputClass = "h-9 rounded-md border bg-transparent px-3 text-sm";
 
 export function ProfileForm({ name }: { name: string }) {
   const [status, setStatus] = useState<"idle" | "pending" | "saved" | "error">("idle");
@@ -41,19 +41,19 @@ export function ProfileForm({ name }: { name: string }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex w-full max-w-sm flex-col gap-4">
-      <label className="flex flex-col gap-1 text-sm font-medium">
-        Nome
-        <input name="name" defaultValue={name} required minLength={2} maxLength={80} className={inputClass} />
-      </label>
-      <label className="flex flex-col gap-1 text-sm font-medium">
-        Senha atual
-        <input name="currentPassword" type="password" autoComplete="current-password" className={inputClass} />
-      </label>
-      <label className="flex flex-col gap-1 text-sm font-medium">
-        Nova senha
-        <input name="newPassword" type="password" minLength={8} autoComplete="new-password" className={inputClass} />
-      </label>
+    <form onSubmit={onSubmit} className="flex w-full flex-col gap-4">
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="name">Nome</Label>
+        <Input id="name" name="name" defaultValue={name} required minLength={2} maxLength={80} />
+      </div>
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="currentPassword">Senha atual</Label>
+        <Input id="currentPassword" name="currentPassword" type="password" autoComplete="current-password" />
+      </div>
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="newPassword">Nova senha</Label>
+        <Input id="newPassword" name="newPassword" type="password" minLength={8} autoComplete="new-password" />
+      </div>
       {status === "error" && <p role="alert" className="text-sm text-destructive">{message}</p>}
       {status === "saved" && <p role="status" className="text-sm">Perfil atualizado.</p>}
       <Button type="submit" disabled={status === "pending"}>
