@@ -133,6 +133,22 @@
   }
 }
 
+/* Landing: faixas de grama cortada e linhas do campo, só decorativas. */
+@utility pitch-stripes {
+  background-image: repeating-linear-gradient(
+    90deg,
+    color-mix(in oklch, var(--primary) 7%, transparent) 0 64px,
+    transparent 64px 128px
+  );
+}
+
+@utility pitch-grid {
+  background-image:
+    linear-gradient(color-mix(in oklch, var(--foreground) 6%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklch, var(--foreground) 6%, transparent) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
