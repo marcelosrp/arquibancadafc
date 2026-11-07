@@ -1,58 +1,87 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Arquibancada
 
-## Getting Started
+Dashboard personalizado do clube favorito: competições, classificação, artilheiro, líder de assistências e próxima partida, alimentado pela [API-Football](https://www.api-football.com/) com cache compartilhado em PostgreSQL.
 
-First, run the development server:
+Stack: Next.js (App Router), TypeScript, Tailwind, Prisma + PostgreSQL, Auth.js (Credentials/JWT), Zod, Vitest, Playwright.
+
+## Setup local
+
+Requisitos: Node 24+, Docker.
 
 ```bash
+npm install
+cp .env.example .env          # preencha as variáveis (veja abaixo)
+npm run db:up                 # Postgres local na porta 5433 (cria também arquibancada_test)
+npx prisma migrate deploy     # aplica as migrações
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Popule os clubes (necessário para o cadastro) com a rota interna:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-## Popular a lista de clubes
-
-Com o app rodando e `API_FOOTBALL_KEY` configurada (gasta ~4 chamadas da cota; mais 1 sem `SEASON_OVERRIDE`):
-
-```
-curl -X POST -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/internal/sync-teams
+```bash
+curl -X POST http://localhost:3000/api/internal/sync-teams -H "Authorization: Bearer $CRON_SECRET"
 ```
 
-Depois, `GET /api/teams?search=flam` consulta apenas o banco.
+### Variáveis de ambiente
 
-## Autenticação
+Validadas com Zod na inicialização (`src/lib/env.ts`).
 
-Auth.js (Credentials, sessão JWT em cookie `HttpOnly`) + senhas com Argon2id. Mapeamento das rotas:
+| Variável | Obrigatória | Descrição |
+|---|---|---|
+| `DATABASE_URL` | sim | Conexão PostgreSQL |
+| `API_FOOTBALL_BASE_URL` | não | Padrão `https://v3.football.api-sports.io` |
+| `API_FOOTBALL_KEY` | sim | Chave da API-Football (só servidor; nunca `NEXT_PUBLIC_*`) |
+| `AUTH_SECRET` | sim | Gere com `npx auth secret` |
+| `CRON_SECRET` | sim | Segredo das rotas `/api/internal/*` |
+| `SEASON_OVERRIDE` | não | Força a temporada (plano gratuito: 2022–2024; em dev use `2024`) |
+| `RESEND_API_KEY` | não | Envio de e-mail; sem ela o link de redefinição é logado no console |
+
+### Como obter a chave da API-Football
+
+Crie uma conta em <https://dashboard.api-football.com/register>, copie a chave do painel e coloque em `API_FOOTBALL_KEY`.
+
+## Testes
+
+```bash
+npm run test:unit
+npm run test:integration   # exige o Postgres do docker-compose
+npm run test:e2e           # Playwright, com servidor mock da API-Football
+```
+
+Todos os testes usam respostas mockadas (`tests/fixtures/api-football/`); nenhum consome a cota da API real.
+
+## Rotas de autenticação
+
+O Auth.js atende login e logout; não há route handlers próprios para eles.
 
 | Contrato | Implementação |
 |---|---|
-| `POST /api/auth/register` | Route Handler próprio (`201`, `400` com erros Zod, `409` e-mail repetido, `429`) |
-| login | `signIn("credentials")` do Auth.js (`POST /api/auth/callback/credentials`) |
-| logout | `signOut()` do Auth.js (`POST /api/auth/signout`) |
+| `POST /api/auth/register` | Route handler próprio |
+| Login | `signIn("credentials", …)` → `POST /api/auth/callback/credentials` |
+| Logout | `signOut()` → `POST /api/auth/signout` |
+| Sessão | `GET /api/auth/session` |
+| `POST /api/auth/forgot`, `POST /api/auth/reset` | Route handlers próprios |
 
-`/dashboard`, `/competicoes` e `/perfil` são protegidas por `src/proxy.ts` (no Next 16, o antigo `middleware.ts`). Login tem rate limit por e-mail (5 / 15 min) e por IP (20 / 15 min). Gere o `AUTH_SECRET` com `npx auth secret`.
+## Limites do plano gratuito
+
+- 100 requisições/dia e ~10/minuto; temporadas 2022–2024 apenas.
+- O navegador nunca chama a API: toda leitura passa por `ApiCache` (TTL de 3 h a 24 h) e, quando a API falha ou responde `429`, o último dado salvo é servido com aviso de desatualizado.
+- `POST /api/internal/refresh` (cron a cada 3 h via `vercel.json`) atualiza as chaves vencidas com `budget` padrão de 60 chamadas por execução, deduplicado por competição/temporada.
+- Em 2024 nenhum clube tem próxima partida; a UI mostra "Sem próxima partida".
+
+## Migrar para o plano pago
+
+1. Assine um plano pago e atualize `API_FOOTBALL_KEY`.
+2. Remova `SEASON_OVERRIDE` (a temporada `current` da API passa a valer).
+3. Reduza os TTLs em `src/server/cache/ttl.ts` e aumente o `budget` do refresh conforme a nova cota.
+4. Ajuste a frequência do cron em `vercel.json`.
+
+## Deploy (Vercel + Neon)
+
+1. Crie o banco no Neon e copie a connection string para `DATABASE_URL` (Vercel).
+2. Defina as variáveis da tabela acima na Vercel (`AUTH_SECRET` e `CRON_SECRET` novos, aleatórios).
+3. Aplique as migrações: `DATABASE_URL=<neon> npx prisma migrate deploy`.
+4. Faça o deploy e rode `POST /api/internal/sync-teams` e `POST /api/internal/refresh` uma vez, com `Authorization: Bearer $CRON_SECRET`.
+5. Confira o cadastro e o dashboard.
+
+Checklist de produção: assinar plano pago, remover `SEASON_OVERRIDE`, conferir os termos de uso de dados e escudos da API-Football.
